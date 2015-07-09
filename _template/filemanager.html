@@ -1,0 +1,94 @@
+<script id="filemanagerTemplate" type="text/html">
+    <div class="filemanager fullscreenmodule">
+        <div class="panes">
+            <div class="directorycontainer">
+                <div class="caption">Directories</div>
+                <div class="directorylist">
+                    <div class="directory" data-directory="/" id="root">
+                        <div class="label fa open">/</div>
+                        <div class="content"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="filecontainer">
+                <div class="caption left">Content</div>
+                <div class="filelist"></div>
+            </div>
+            <div class="filedetail">
+                <div class="caption right">Location:</div>
+                <div class="icon"></div>
+                <div class="info"></div>
+                <div class="actions">
+                    <div class="fileactions hidden">
+                        <div class="caption">File actions</div>
+                        <div class="action_fileopen action"><i class="fa fa-angle-double-right"></i> Open</div>
+                        <div class="action_filerename action"><i class="fa fa-ellipsis-h"></i> Rename</div>
+                        <div class="action_filedelete action"><i class="fa fa-close"></i> Delete</div>
+                        <div class="action_filecopy hidden action">copy</div>
+                        <div class="action_edittext action"><i class="fa fa-edit"></i> Edit as Text</div>
+                        <div class="action_edithtml action"><i class="fa fa-code"></i> Edit as HTML</div>
+                    </div>
+                    <div class="directoryactions hidden">
+                        <div class="caption">Directory actions</div>
+                        <div class="action_directoryopen action"><i class="fa fa-angle-double-right"></i> Open</div>
+                        <div class="action_filerename action"><i class="fa fa-ellipsis-h"></i> Rename</div>
+                        <div class="action_directorydelete action"><i class="fa fa-close"></i> Delete</div>
+                        <div class="action_directorycopy hidden action">copy</div>
+                    </div>
+                    <div class="containeractions">
+                        <div class="caption">Add</div>
+                        <div class="action_upload action"><i class="fa fa-upload"></i> Upload</div>
+                        <div class="uploadbar hidden">
+                                <div style='height: 0;width:0; overflow:hidden;'>
+                                    <input id="fileupload" type="file" name="files[]" multiple="false" capture="camera">
+                                </div>
+                                <!-- The global progress bar -->
+                                <div id="progress">
+                                    <div class="bar" style="width: 0%;"></div>
+                                </div>
+
+                                <!-- The container for the uploaded files -->
+                                <div id="files" class="files"></div>
+                            </div>
+
+
+                        <div class="action_filecreate action"><i class="fa fa-plus-square-o"></i> Create File</div>
+                        <div class="action_directorycreate action"><i class="fa fa-plus-square-o"></i> Create Directory</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+
+<script id="inlineDialogTemplate" type="text/html">
+    <div class="inlineDialog">
+        <div class="content">
+            {{content}}
+        </div>
+        <div class="buttons">
+            <div class="button positive">OK</div>
+            <div class="button neutral">Cancel</div>
+        </div>
+    </div>
+</script>
+
+<script id="inputBox" type="text/html">
+    <input type="text" class="inputBox" value="{{value}}">
+</script>
+
+
+<script id="textEditorTemplate" type="text/html">
+    <div class="texteditor fullscreenmodule">
+        <form id="texteditform">
+            <div class="caption">{{name}}</div>
+            <div class="content">
+                <textarea name="editorcontent" id="editorcontent">{{content}}</textarea>
+            </div>
+            <div><div class="button positive action_update">Update</div> <div class="button action_cancel">Cancel</div></div>
+        </form>
+    </div>
+</script>
+

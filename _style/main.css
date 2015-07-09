@@ -1,0 +1,244 @@
+html {
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html,body{
+    font-family: sans-serif;
+}
+
+.hidden{
+    display: none;
+}
+
+.directory .content{
+    padding-left: 20px;
+}
+
+.filedirectory,
+.directoryup{
+    background-color: #eef9f2;
+}
+
+.directoryup{
+    padding-left: 4px;
+}
+
+.filedirectory label.fa,
+.file label.fa{
+    display: block;
+}
+
+.filedirectory .label.fa:before{
+    content: "\f114";
+    margin: 0 4px;
+    color: #66758d;
+}
+
+.file .label.fa:before{
+    content: "\f016";
+    margin: 0 4px;
+    color: #66758d;
+}
+
+.file:hover,
+.filedirectory:hover,
+.directoryup:hover{
+    background-color: #d7e7e5;
+    cursor: pointer;
+
+}
+
+.filemanager .panes{
+    height: 100%;
+    width: 100%;
+    padding-left: 400px;
+    padding-right: 0;
+}
+
+.filemanager .caption,
+.texteditor .caption{
+    background-color: #2a74a0;
+    border: 1px solid #c1d1cf;
+    padding: 4px;
+    font-size: 13px;
+    color: #FFF;
+}
+.filemanager .caption.right {
+    text-align: right;
+    border-right: none;
+    border-left: none;
+}
+
+.filemanager .caption.left {
+    border-left: none;
+}
+
+.filemanager .actions{
+    margin-right: 20px;
+}
+
+.filemanager .actions i.fa{
+   width: 16px;
+}
+
+.filemanager .actions .caption{
+    background-color: #FFF;
+    border: none;
+    border-bottom: 1px solid #c1d1cf;
+    padding: 4px;
+    font-size: 13px;
+    color: #3c5e7a;
+}
+
+.filemanager .action{
+    color: #3a8db2;
+    font-size: 13px;
+    padding: 4px 0 4px 12px;
+}
+
+.filemanager .action:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.filemanager .directorycontainer{
+    height: 100%;
+    width: 200px;
+    position: absolute;
+    margin-left: -400px;
+    background-color: #eef9f2;
+}
+
+.filemanager .directorylist{
+    padding: 4px;
+}
+
+.filemanager .directory .label.fa{
+    display: block;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    padding: 4px;
+    color: #222f44;
+    border-bottom: 1px solid transparent;
+}
+
+.filemanager .directory .label:hover{
+    color: #0f101e;
+    cursor: pointer;
+    border-bottom: 1px solid #c1d1cf;
+}
+
+
+.filemanager .directory .label.fa:before{
+    margin-right: 6px;
+    content: "\f114";
+}
+
+.filemanager .directory .label.fa.open:before,
+.filemanager .directory .label.fa:hover:before{
+    margin-right: 4px;
+    content: "\f115";
+}
+
+.filemanager .filecontainer{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.filemanager .filedetail{
+    position: absolute;
+    height: 100%;
+    width: 200px;
+    margin-left: -200px;
+}
+
+.filemanager .filedetail .icon.image{
+    width: 100%;
+    height: 100px;
+    background-size: contain;
+    background-position: left center;
+    background-repeat: no-repeat;
+}
+
+.filelist .label{
+    font-size: 13px;
+    padding: 2px;
+    margin: 2px 0;
+    border-bottom: 1px dotted #c1d1cf;
+}
+
+.filedetail .info{
+    font-size: 13px;
+    padding: 4px;
+    line-height: 16px;
+}
+
+.button{
+    display: inline-block;
+    padding: 4px 12px;
+    text-align: center;
+    background-color: #c1d1cf;
+    font-size: 13px;
+    border-radius: 4px;
+}
+
+.button:hover{
+    background-color: #9dadab;
+    cursor: pointer;
+}
+
+.button.positive{
+    background-color: #42d640;
+    color: white;
+}
+
+.button.positive:hover{
+    background-color: #38aa36;
+}
+
+.button.neutral{
+    background-color: #213eb2;
+    color: white;
+}
+
+.button.neutral:hover{
+    background-color: #21399d;
+}
+
+.inlineDialog{
+    font-size: 13px;
+    text-align: center;
+    padding: 4px;
+    background-color: #a2c4f9;
+}
+
+.inlineDialog .inputBox{
+    width: 100%;
+    padding: 4px;
+    border: #56799d;
+}
+
+.inlineDialog .buttons{
+    padding-top: 8px;
+}
+
+
+#progress{
+    height: 4px;
+}
+
+#progress .bar{
+    height: 4px;
+    background-color: green;
+
+}
+
+
+.texteditor textarea{
+    width: 100%;
+    height: 400px;
+}
