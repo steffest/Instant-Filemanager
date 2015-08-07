@@ -1,3 +1,16 @@
+var NAVIGATIONPANE = {
+    FOLDERS : 1,
+    FILES :2,
+    DETAIL : 3,
+    TEXTEDITOR : 4
+};
+
+var UISCOPE = {
+    FILES: 1,
+    PROFILES: 2,
+    PROFILEEDITOR: 3
+};
+
 var UI = (function () {
 
     var self = {};
@@ -8,15 +21,141 @@ var UI = (function () {
     var currentDirectoryElm;
     var filemanager;
 
-    self.init = function(){
-        bindings();
+    var currentProfile;
+    var currentProfileElm;
+
+    var navigationContainerElm;
+    var navigationFolderElm;
+    var navigationFilesElm;
+    var navigationDetailElm;
+
+    self.addNavigationPanes = function(parent){
+        navigationContainerElm = parent;
+        parent.append(Templates["filemanagerTemplate"]);
+
+        navigationFolderElm = navigationContainerElm.find(".foldercontainer");
+        navigationFilesElm = navigationContainerElm.find(".filelist");
+        navigationDetailElm = navigationContainerElm.find(".filedetail");
+
+        // init datepickers
+        var pickerFrom = new Pikaday({
+            field: el("commonpublishfrom"),
+            format: 'DD/MM/YYYY'
+        });
+        var pickerTo = new Pikaday({
+            field: el("commonpublishto"),
+            format: 'DD/MM/YYYY'
+        });
+
+
+    };
+
+    self.getNavigationPane = function(section){
+       switch(section){
+           case NAVIGATIONPANE.FOLDERS:
+                return navigationFolderElm;
+                break;
+           case NAVIGATIONPANE.FILES:
+               return navigationFilesElm;
+               break;
+           case NAVIGATIONPANE.DETAIL:
+               return navigationDetailElm;
+               break;
+       }
+    };
+
+    self.addNavigationPanesTitle = function(section,title){
+
+    };
+
+    self.initFileManager = function(){
+        fileManagerBindings();
 
         var elm = $("#root");
         currentDirectoryElm = elm;
         FileSystem.getDirectory(elm);
+
     };
 
-    var bindings = function(){
+
+    self.initProfileManager = function(){
+        profileManagerBindings();
+    };
+
+    var profileManagerBindings = function(){
+        var container = navigationFilesElm;
+        filemanager = $(".filemanager");
+
+
+        $(".profile").on("click",function(){
+            currentProfileElm = this;
+            currentProfile = $(this).data("profile");
+            console.log("click profile",currentProfile);
+            DataStore.listProfile(currentProfile,currentProfileElm);
+        });
+
+        navigationFolderElm.on("click",".category",function(){
+            currentProfileElm = $(this).parent().prev(".profile");
+            currentProfile = currentProfileElm.data("profile");
+            var category = $(this).html();
+            console.log("click profile",currentProfile);
+            DataStore.listProfileCategory(currentProfile,category);
+        });
+
+        container.on("click",".record",function(){
+            var elm = $(this);
+            console.log("click",elm);
+            var profile = elm.data("profile");
+            var profileId = elm.data("id");
+            DataStore.editProfile(profile,profileId);
+        });
+
+        filemanager.on("click",".action_addrecord",function(){
+            DataStore.editProfile(currentProfile,0);
+        });
+
+        filemanager.on("click",".action_updateprofile",function(){
+            DataStore.updateProfile();
+        });
+
+        filemanager.on("click",".action_cancelprofile",function(){
+            DataStore.cancelEditProfile();
+        });
+
+        filemanager.on("click",".action_deleteprofile",function(){
+            var template = Templates["inlineDialogTemplate"];
+            var content = "Are you sure you want to delete this item?";
+            template = template.replace("{{content}}",content);
+
+            var baseElm = this;
+            var config = {
+                baseElm : baseElm,
+                template: template,
+                onOk: function(){
+                    DataStore.deleteProfile();
+                    UI.restoreInlineDialog(baseElm);
+                },
+                onCancel: function(){
+                    UI.restoreInlineDialog(baseElm);
+                }
+            };
+            UI.inlineDialog(config);
+        });
+
+
+        // other sections
+        navigationFolderElm.on("click",".section",function(){
+            var section = $(this).data("section");
+            DataStore.initSection(this,section);
+        });
+
+        navigationFolderElm.on("click",".menu",function(){
+            var id = $(this).data("id");
+            DataStore.editList(id);
+        });
+    };
+
+    var fileManagerBindings = function(){
         filemanager = $(".filemanager");
 
         $(".directory").on("click",".label",function(){
@@ -358,13 +497,37 @@ var UI = (function () {
     };
 
     self.deselectFile = function(){
-        var container = $(".filedetail");
+        var container = navigationDetailElm;
         container.find(".info").empty();
         hide(container.find(".directoryactions"));
         hide(container.find(".fileactions"));
+        hide(container.find(".recordactions"));
         var icon = container.find(".icon").get(0);
         icon.className = "icon directoryicon";
         self.resetInlineDialog();
+    };
+
+
+    self.setScope = function(UIScope){
+        switch(UIScope){
+            case UISCOPE.FILES:
+                self.deselectFile();
+                unHide(navigationDetailElm.find(".containeractions"));
+                break;
+            case UISCOPE.PROFILES:
+                self.deselectFile();
+                hide(navigationDetailElm.find(".containeractions"));
+                unHide(navigationDetailElm.find(".profileactions"));
+                break;
+            case UISCOPE.PROFILEEDITOR:
+                self.deselectFile();
+                unHide(navigationDetailElm.find(".recordactions"));
+                hide($("#commonrecordstate"));
+                hide($("#commonpublishdate"));
+                hide($("#commonrecordcategory"));
+                hide($("#commonrecordtags"));
+                break;
+        }
     };
 
     self.showFile = function(senderElm,path,data){

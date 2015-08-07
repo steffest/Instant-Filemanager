@@ -12,9 +12,11 @@ var FileSystem = (function () {
         FILE:{name: "file"}
     };
 
-    self.addFileManager = function(parent,rootDirectory){
-        parent.append(Templates["filemanagerTemplate"]);
-        UI.init();
+    self.addFileManager = function(rootDirectory){
+       // parent.append(Templates["filemanagerTemplate"]);
+        var container = $(UI.getNavigationPane(NAVIGATIONPANE.FOLDERS));
+        container.append(Templates["directoryListTemplate"]);
+        UI.initFileManager();
     };
 
     self.getDirectory = function(elm){

@@ -9,6 +9,10 @@ $(document).on("ready",function(){
         });
 
         var container = $("#container");
-        FileSystem.addFileManager(container,"/");
+        UI.addNavigationPanes(container);
+        DataStore.addProfile("Articles","articles");
+        DataStore.addSection("Menus","menu");
+        FileSystem.addFileManager("/");
+
     });
 });

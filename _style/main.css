@@ -7,11 +7,19 @@ html {
 
 html,body{
     font-family: sans-serif;
+    padding: 0;
+    margin: 0;
 }
 
 .hidden{
     display: none;
 }
+
+.clear{
+    clear: both;
+}
+
+
 
 .directory .content{
     padding-left: 20px;
@@ -19,17 +27,19 @@ html,body{
 
 .filedirectory,
 .directoryup{
-    background-color: #eef9f2;
+    background-color: #f2f2f5;
 }
 
 .directoryup{
     padding-left: 4px;
 }
 
-.filedirectory label.fa,
-.file label.fa{
+.filedirectory .label.fa,
+.file .label.fa,
+.record .label.fa{
     display: block;
 }
+
 
 .filedirectory .label.fa:before{
     content: "\f114";
@@ -37,16 +47,18 @@ html,body{
     color: #66758d;
 }
 
-.file .label.fa:before{
+.file .label.fa:before,
+.record .label.fa:before{
     content: "\f016";
     margin: 0 4px;
     color: #66758d;
 }
 
 .file:hover,
+.record:hover,
 .filedirectory:hover,
 .directoryup:hover{
-    background-color: #d7e7e5;
+    background-color: #d2e6ff;
     cursor: pointer;
 
 }
@@ -54,8 +66,6 @@ html,body{
 .filemanager .panes{
     height: 100%;
     width: 100%;
-    padding-left: 400px;
-    padding-right: 0;
 }
 
 .filemanager .caption,
@@ -66,6 +76,7 @@ html,body{
     font-size: 13px;
     color: #FFF;
 }
+
 .filemanager .caption.right {
     text-align: right;
     border-right: none;
@@ -74,6 +85,11 @@ html,body{
 
 .filemanager .caption.left {
     border-left: none;
+}
+
+.filemanager .caption.margin{
+    margin-top: 16px;
+
 }
 
 .filemanager .actions{
@@ -93,10 +109,22 @@ html,body{
     color: #3c5e7a;
 }
 
+.filemanager .recordactions{
+    margin-bottom: 16px;
+}
+
 .filemanager .action{
     color: #3a8db2;
     font-size: 13px;
     padding: 4px 0 4px 12px;
+}
+
+.filemanager .action.positive{
+    color: #22a355;
+}
+
+.filemanager .action.negative{
+    color: #991533;
 }
 
 .filemanager .action:hover{
@@ -108,11 +136,12 @@ html,body{
     height: 100%;
     width: 200px;
     position: absolute;
-    margin-left: -400px;
-    background-color: #eef9f2;
+    margin-left: 0;
+    background-color: #f2f2f5;
 }
 
-.filemanager .directorylist{
+.filemanager .directorylist,
+.filemanager .profilelist{
     padding: 4px;
 }
 
@@ -147,13 +176,14 @@ html,body{
     position: absolute;
     height: 100%;
     width: 100%;
+    padding-left: 400px;
 }
 
 .filemanager .filedetail{
     position: absolute;
     height: 100%;
     width: 200px;
-    margin-left: -200px;
+    margin-left: 200px;
 }
 
 .filemanager .filedetail .icon.image{
@@ -166,8 +196,8 @@ html,body{
 
 .filelist .label{
     font-size: 13px;
-    padding: 2px;
-    margin: 2px 0;
+    padding: 4px 2px;
+    margin: 0;
     border-bottom: 1px dotted #c1d1cf;
 }
 
@@ -175,6 +205,95 @@ html,body{
     font-size: 13px;
     padding: 4px;
     line-height: 16px;
+}
+
+.filedetail select{
+    border: none;
+    border-bottom: 1px solid #c1d1cf;
+    background-color: white;
+    width: 90%;
+    margin-left: 10%;
+    padding: 4px;
+}
+
+.filedetail .datelabel{
+    width: 35%;
+    text-align: right;
+    font-size: 12px;
+    padding: 4px;
+    color: #97a5a3;
+    float: left;
+}
+
+#commonpublishdate .datepicker{
+    float: left;
+    border: none;
+    border-bottom: 1px solid #c1d1cf;
+    padding: 4px;
+    width: 65%;
+}
+
+.profilelist .profilecategories{
+    padding-left: 20px;
+}
+
+.profilelist .profile.fa,
+.profilelist .category.fa{
+    display: block;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    padding: 4px;
+    color: #222f44;
+    border-bottom: 1px solid transparent;
+    text-transform: capitalize;
+}
+
+.profilelist .profile.fa:hover,
+.profilelist .category.fa:hover{
+    color: #0f101e;
+    cursor: pointer;
+    border-bottom: 1px solid #c1d1cf;
+}
+
+.profilelist .profile.fa:before{
+    margin-right: 6px;
+    content: "\f0b1";
+}
+
+.profilelist .category.fa:before{
+    margin-right: 6px;
+    content: "\f02b";
+}
+
+
+.editor{
+    padding-bottom: 4px;
+}
+
+.editor .itemcaption{
+    padding: 4px;
+    background-color: #f2f2f5;
+    text-transform: capitalize;
+}
+
+.editor .inputBox{
+    padding: 4px;
+    border: 1px solid silver;
+    width: 100%;
+}
+
+.editor textarea{
+    padding: 4px;
+    border: 1px solid silver;
+    width: 100%;
+    height: 200px;
+}
+
+.editor select{
+    padding: 4px;
+    border: 1px solid silver;
+    width: 100%;
+    background-color: white;
 }
 
 .button{
@@ -209,6 +328,15 @@ html,body{
     background-color: #21399d;
 }
 
+.button.negative{
+    background-color: #d61747;
+    color: white;
+}
+
+.button.negative:hover{
+    background-color: #ab163a;
+}
+
 .inlineDialog{
     font-size: 13px;
     text-align: center;
@@ -237,8 +365,13 @@ html,body{
 
 }
 
-
 .texteditor textarea{
     width: 100%;
     height: 400px;
+}
+
+
+.inlineformrow{
+    padding: 4px;
+    border-bottom: 1px solid #c1d1cf;
 }

@@ -1,20 +1,15 @@
 <script id="filemanagerTemplate" type="text/html">
     <div class="filemanager fullscreenmodule">
         <div class="panes">
-            <div class="directorycontainer">
-                <div class="caption">Directories</div>
-                <div class="directorylist">
-                    <div class="directory" data-directory="/" id="root">
-                        <div class="label fa open">/</div>
-                        <div class="content"></div>
-                    </div>
-                </div>
-
-            </div>
             <div class="filecontainer">
                 <div class="caption left">Content</div>
                 <div class="filelist"></div>
             </div>
+            <div class="directorycontainer">
+                <div class="caption">Directories</div>
+                <div class="foldercontainer"></div>
+            </div>
+
             <div class="filedetail">
                 <div class="caption right">Location:</div>
                 <div class="icon"></div>
@@ -56,8 +51,68 @@
                         <div class="action_filecreate action"><i class="fa fa-plus-square-o"></i> Create File</div>
                         <div class="action_directorycreate action"><i class="fa fa-plus-square-o"></i> Create Directory</div>
                     </div>
+
+                    <div class="recordactions hidden">
+                        <div class="caption">Item</div>
+                        <div class="action positive action_updateprofile"> <i class="fa fa-check-square-o"></i> Save</div>
+                        <div class="action action_cancelprofile"><i class="fa fa-arrow-left"></i> Close</div>
+                        <div class="action negative action_deleteprofile"><i class="fa fa-remove"></i> Delete</div>
+
+                        <div id="commonrecordstate">
+                            <div class="caption margin">Status</div>
+                            <select id="commonstate">
+                                <option value="published">Published</option>
+                                <option value="draft">Draft</option>
+                                <option value="parked">Parked</option>
+                            </select>
+                            <div id="commonpublishdate">
+                                <div class="datelabel">From</div> <input type="text" id="commonpublishfrom" class="datepicker">
+                                <div class="clear"></div>
+                                <div class="datelabel">To</div> <input type="text" id="commonpublishto" class="datepicker">
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+
+                        <div id="commonrecordcategory">
+                            <div class="caption margin">Category</div>
+                            <select id="commoncategory">
+
+                            </select>
+                        </div>
+
+                        <div id="commonrecordtags">
+                            <div class="caption margin">Tags</div>
+                            <div id="commontaglist"></div>
+                        </div>
+
+                    </div>
+
+
+                    <div class="profileactions hidden">
+                        <div class="caption">Add</div>
+                        <div class="action_addrecord action"><i class="fa fa-plus-square-o"></i> New item</div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
+</script>
+
+<script id="profileListTemplate" type="text/html">
+    <div class="profilelist">
+    </div>
+</script>
+
+<script id="sectionListTemplate" type="text/html">
+    <div class="sectionlist">
+    </div>
+</script>
+
+<script id="directoryListTemplate" type="text/html">
+    <div class="directorylist">
+        <div class="directory" data-directory="/" id="root">
+            <div class="label fa open">/</div>
+            <div class="content"></div>
         </div>
     </div>
 </script>
@@ -89,6 +144,19 @@
             </div>
             <div><div class="button positive action_update">Update</div> <div class="button action_cancel">Cancel</div></div>
         </form>
+    </div>
+</script>
+
+<script id="formEditorTemplate" type="text/html">
+    <form>
+        <div class="formcontent"></div>
+    </form>
+</script>
+
+<script id="formEditorTemplateText" type="text/html">
+    <div class="editor">
+        <div class="itemcaption">{{label}}</div>
+        <input type="text" name="{{name}}" class="inputBox" value="{{value}}">
     </div>
 </script>
 
