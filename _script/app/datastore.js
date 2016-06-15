@@ -79,6 +79,14 @@ var DataStore = (function () {
 
     };
 
+    self.addProfiles = function(profiles){
+       if (profiles){
+           profiles.forEach(function(profile){
+               self.addProfile(profile.title,profile.profile);
+           });
+       }
+    };
+
     self.addProfile = function(label,profile){
         if (!profileListElm){
             var container = $(UI.getNavigationPane(NAVIGATIONPANE.FOLDERS));

@@ -4,6 +4,10 @@ var Api = (function () {
 
     var baseUrl = Config.getApiUrl();
 
+    self.init = function(){
+        baseUrl = Config.getApiUrl();
+    };
+
     self.get = function(url,next){
         url = baseUrl + url;
         $.get(url,function(response){

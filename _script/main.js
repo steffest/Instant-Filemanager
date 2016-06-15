@@ -3,6 +3,10 @@ var Templates = {};
 
 $(document).on("ready",function(){
 
+    Config.init();
+    Api.init();
+    document.title = Config.title();
+
     $.get('_template/filemanager.html?' + version , function(templates) {
         $.each($(templates + " script"),function(index,template){
             Templates[template.id] = template.innerHTML;
@@ -17,25 +21,22 @@ $(document).on("ready",function(){
                UI.addNavigationPanes(container);
                UI.setNavigationPanesTitle("username",App.getCurrentUser().userName);
                DataStore.addTags();
-               DataStore.addProfile("Pages","pages");
-               DataStore.addProfile("Articles","articles");
-               //DataStore.addProfile("Elpees","elpees");
+               DataStore.addProfiles(Config.get("profiles"));
 
                if (App.isSystemAdmin()){
 
                }
 
                if (App.isAdmin()){
-                   DataStore.addProfile("Users","users");
-                   UI.addSection("Menus","menu");
-                   UI.addSection("Forms","form");
+                   DataStore.addProfiles(Config.get("adminProfiles"));
+                   UI.addSections(Config.get("adminSections"));
                }
 
-               UI.addSection("Files","filemanager");
+               UI.addSections(Config.get("sections"));
 
-               //FileSystem.addFileManager("/");
            }else{
-               container.append(Templates["loginTemplate"]);
+               var template = Mustache.render(Templates["loginTemplate"],{title: Config.title(), version: Config.get("version")});
+               container.append(template);
                $("#loginSubmit").on("click touch",function(){
                    var data = $("#loginform").serialize();
 

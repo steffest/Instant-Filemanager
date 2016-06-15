@@ -1,6 +1,6 @@
 <script id="loginTemplate" type="text/html">
     <form id="loginform">
-        <h2>DHGOHG CMS <small>V2.0.1</small></h2>
+        <h2>{{title}} <small>V{{version}}</small></h2>
         <input type="text" name="u" placeholder="Login"><br>
         <input type="password" name="p" placeholder="Password"><br>
         <div class="error badlogin">
@@ -42,7 +42,7 @@
                 </div>
             </div>
             <div class="directorycontainer">
-                <div class="caption borderright">DHGOHG CMS</div>
+                <div class="caption borderright">{{title}}</div>
                 <div class="foldercontainer"></div>
             </div>
 

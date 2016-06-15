@@ -69,7 +69,8 @@ var UI = (function () {
 
     self.addNavigationPanes = function(parent){
         navigationContainerElm = parent;
-        parent.append(Templates["filemanagerTemplate"]);
+        var mainTemplate = Templates["filemanagerTemplate"];
+        parent.append(Mustache.render(mainTemplate,{title: Config.title()}));
 
         navigationFolderElm = navigationContainerElm.find(".foldercontainer");
         navigationFilesElm = navigationContainerElm.find(".filelist");
@@ -621,6 +622,15 @@ var UI = (function () {
        }
     };
 
+    self.addSections = function(sections){
+        if (sections){
+            sections.forEach(function(section){
+                self.addSection(section.title,section.profile);
+            });
+        }
+
+    };
+
     self.addSection = function(label,section){
         var container = $(navigationFolderElm);
 
@@ -676,20 +686,30 @@ var UI = (function () {
                 }else {
                     submenu = createDiv("sectionsubmenu");
                     $(submenu).insertAfter(sender);
-                    FileSystem.addFileManager("/_img/","Pictures",submenu,true);
-                    FileSystem.addFileManager("/documents/","Documents",submenu);
+
+                    var autoExpand = true;
+                    var paths = Config.get("filemanagerFolders");
+                    if (paths){
+                        paths.forEach(function(pathInfo){
+                            FileSystem.addFileManager(pathInfo.path,pathInfo.title,submenu,autoExpand);
+                            autoExpand = false;
+                        })
+                    }
+
+                    //FileSystem.addFileManager("/_img/","Pictures",submenu,true);
+                    //FileSystem.addFileManager("/documents/","Documents",submenu);
                     if (App.isAdmin()){
 
                     }
 
                     if (App.isSystemAdmin()){
-                        FileSystem.addFileManager("/_script/","Script",submenu);
-                        FileSystem.addFileManager("/_style/","Style",submenu);
-                        FileSystem.addFileManager("/","ROOT",submenu);
+                        var paths = Config.get("adminFilemanagerFolders");
+                        if (paths){
+                            paths.forEach(function(pathInfo){
+                                FileSystem.addFileManager(pathInfo.path,pathInfo.title,submenu);
+                            })
+                        }
                     }
-                    //FileSystem.addFileManager("/box/","Camera",submenu);
-                    //FileSystem.addFileManager("/foto/","Foto Library",submenu);
-                    //FileSystem.addFileManager("/drop/","DropBox",submenu);
                 }
                 break;
         }
