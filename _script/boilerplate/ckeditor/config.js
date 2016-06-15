@@ -38,4 +38,6 @@ CKEDITOR.editorConfig = function( config ) {
 	config.uiColor = '#FFFFFF';
 	config.height = 400;
 	config.toolbarCanCollapse = true;
+
+    config.extraPlugins = 'forms,fakeobjects';
 };

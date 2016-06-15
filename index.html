@@ -4,8 +4,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=0.8, maximum-scale=0.8">
 
-    <title>Spark File Manager</title>
-    <link rel="stylesheet" href="_style/main.css" type="text/css">
+    <title>DHGOHG CMS</title>
+    <link rel="stylesheet" href="_style/main.css?v0.0.7" type="text/css">
     <link rel="stylesheet" href="_style/pickaday.css" type="text/css">
     <!--<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">-->
     <link rel="stylesheet" href="_style/fontawesome4.3.0/css/font-awesome.css">
@@ -15,6 +15,9 @@
     <script language="javascript" type="text/javascript" src="_script/boilerplate/util.js"></script>
     <script language="javascript" type="text/javascript" src="_script/boilerplate/mustache.js"></script>
     <script language="javascript" type="text/javascript" src="_script/boilerplate/jquery.sortable.js"></script>
+
+    <!-- polyfills -->
+    <script language="javascript" type="text/javascript" src="_script/boilerplate/polyfill/array_inludes.js"></script>
 
     <!-- file upload -->
     <script language="javascript" type="text/javascript" src="_script/boilerplate/blueimp/jquery.iframe-transport.js"></script>
@@ -27,19 +30,35 @@
     <script language="javascript" type="text/javascript" src="_script/boilerplate/pickaday.js"></script>
 
     <!-- html editor -->
+    <!--
     <script language="javascript" type="text/javascript" src="_script/boilerplate/ckeditor/ckeditor.js"></script>
+   <script language="javascript" type="text/javascript" src="_script/boilerplate/ckeditor/cmsplugin.js"></script>
+   -->
+
+
+   <script language="javascript" type="text/javascript" src="_script/boilerplate/tinymce/tinymce.min.js"></script>
+   <script language="javascript" type="text/javascript" src="_script/boilerplate/tinymce/cmsplugin.js?v0.0.7"></script>
+
+
+    <!-- (multi) touch - drag and drop -->
+    <script language="javascript" type="text/javascript" src="_script/boilerplate/touch.js"></script>
 
     <!-- app -->
-    <script language="javascript" type="text/javascript" src="_script/app/api.js"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/template.js"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/filesystem.js"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/datastore.js"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/formbuilder.js"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/editor.js"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/image.js"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/ui.js"></script>
+    <script language="javascript" type="text/javascript" src="_script/config.js?v0.0.7"></script>
 
-    <script language="javascript" type="text/javascript" src="_script/main.js"></script>
+
+    <script language="javascript" type="text/javascript" src="_script/app/app.js?v0.0.7"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/api.js?v0.0.7"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/template.js?v0.0.7"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/filesystem.js?v0.0.7"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/datastore.js?v0.0.7"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/formbuilder.js?v0.0.7"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/editor.js?v0.0.7"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/media.js?v0.0.7"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/ui.js?v0.0.7"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/ui_dragdrop.js?v0.0.7"></script>
+
+    <script language="javascript" type="text/javascript" src="_script/main.js?v0.0.7"></script>
 
 </head>
 

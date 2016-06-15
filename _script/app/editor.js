@@ -11,7 +11,7 @@ var Editor = (function () {
         var url = Api.getBaseUrl() + "file/" + path;
         $.get(url,function(data){
             fileInfo.content = data;
-            var container = $("#container");
+            var container = UI.getNavigationPane(NAVIGATIONPANE.MAIN);
             self.createTextEditor(container,fileInfo,html);
             setupInterface();
         });
@@ -20,7 +20,7 @@ var Editor = (function () {
     self.updateFile = function(){
         if (currentFileInfo){
             if (isHtml){
-                CKEDITOR.instances.editorcontent.updateElement();
+                HTMLEDITOR.updateElement();
             }
             var data = $("#texteditform").serialize();
 
@@ -46,18 +46,20 @@ var Editor = (function () {
 
         parent.append(editor);
 
-        $(".fullscreenmodule").hide();
+        //$(".fullscreenmodule").hide();
+        $(".mainpanelmodule").hide();
         $(".texteditor").show();
         isHtml = html;
 
         if (html){
-            CKEDITOR.replace("editorcontent");
+            HTMLEDITOR.init("editorcontent");
         }
     };
 
     self.destroyTextEditor = function(parent){
         $(".texteditor").remove();
-        $(".fullscreenmodule").show();
+        $(".mainpanelmodule").show();
+        //$(".fullscreenmodule").show();
     };
 
     var setupInterface = function(){

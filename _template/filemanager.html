@@ -1,18 +1,54 @@
+<script id="loginTemplate" type="text/html">
+    <form id="loginform">
+        <h2>DHGOHG CMS <small>V2.0.1</small></h2>
+        <input type="text" name="u" placeholder="Login"><br>
+        <input type="password" name="p" placeholder="Password"><br>
+        <div class="error badlogin">
+            This doesn't seem to be a valid login.<br>
+            please retry
+        </div>
+        <div class="error noaccess">
+            Sorry, you don't have access to this section of the system.
+        </div>
+        <div class="button positive" id="loginSubmit">Login</div>
+    </form>
+</script>
+
 <script id="filemanagerTemplate" type="text/html">
     <div class="filemanager fullscreenmodule">
         <div class="panes">
             <div class="filecontainer">
-                <div class="caption left">Content</div>
-                <div class="filelist"></div>
+                <div class="mainpanel">
+                    <div class="mainpanelmodule">
+                        <div class="caption left">
+                            <div class="captionsubmenu settingsmenu">
+                                <div class="button action_logout">Log out</div>
+                            </div>
+                            <div class="label">Content</div>
+                            <div class="buttons divider">
+                                <div class="button settings"><span class="username">user</span> <i class="fa fa-gear"></i> </div>
+                            </div>
+                            <div class="buttons divider">
+                                <div class="button toggle display_tags fa"></div>
+                            </div>
+                            <div class="buttons">
+                                <div class="button display display_list fa selected"></div>
+                                <div class="button display display_grid fa"></div>
+                                <div class="button display display_gridlarge fa"></div>
+                            </div>
+                        </div>
+                        <div class="filelist belowcaption displaylist"></div>
+                    </div>
+                </div>
             </div>
             <div class="directorycontainer">
-                <div class="caption">Directories</div>
+                <div class="caption borderright">DHGOHG CMS</div>
                 <div class="foldercontainer"></div>
             </div>
 
             <div class="filedetail">
                 <div class="caption right">Location:</div>
-                <div class="icon"></div>
+                <div class="preview"></div>
                 <div class="info"></div>
                 <div class="actions">
                     <div class="fileactions hidden">
@@ -80,19 +116,50 @@
                             </select>
                         </div>
 
+                        <div id="commonrecordaccess">
+                            <div class="caption margin">Access</div>
+                            <select id="commonaccess">
+
+                            </select>
+                        </div>
+
                         <div id="commonrecordtags">
                             <div class="caption margin">Tags</div>
                             <div id="commontaglist"></div>
                         </div>
-
                     </div>
-
 
                     <div class="profileactions hidden">
                         <div class="caption">Add</div>
                         <div class="action_addrecord action"><i class="fa fa-plus-square-o"></i> New item</div>
                     </div>
-                </div>
+
+                    <div class="listactions hidden">
+                        <div class="caption">List</div>
+                        <div class="action positive action_updatelist"> <i class="fa fa-check-square-o"></i> Save</div>
+                        <div class="action action_closelist"><i class="fa fa-arrow-left"></i> Close</div>
+                        <div class="action negative action_deletelist"><i class="fa fa-remove"></i> Delete</div>
+                        <div class="caption">Add</div>
+                        <div class="action action_addlistitem"><i class="fa fa-plus-square-o"></i> New item</div>
+                    </div>
+
+
+                    <div class="taglistactions hidden">
+                        <div class="caption">Tags</div>
+                        <div id="commontagsinput">
+                            <input type="text" id="commontags" class="inputBox">
+                        </div>
+                        <div class="actionbar">
+                            <div class="buttons">
+                                <div class="button tags_toggle fa down"></div>
+                            </div>
+                            <div class="searchbox">
+                                <i class="fa fa-search"></i>
+                                <input type="search" class="tagsearch" placeholder="search"></div>
+                            </div>
+                        <div class="taglist">
+                        </div>
+                    </div>
             </div>
         </div>
     </div>
@@ -107,16 +174,6 @@
     <div class="sectionlist">
     </div>
 </script>
-
-<script id="directoryListTemplate" type="text/html">
-    <div class="directorylist">
-        <div class="directory" data-directory="/" id="root">
-            <div class="label fa open">/</div>
-            <div class="content"></div>
-        </div>
-    </div>
-</script>
-
 
 <script id="inlineDialogTemplate" type="text/html">
     <div class="inlineDialog">
@@ -135,11 +192,32 @@
 </script>
 
 
+<script id="imageViewerTemplate" type="text/html">
+    <div class="imageviewer mainpanelmodule">
+        <div class="caption left">
+            <div class="label">Image</div>
+            <div class="buttons divider">
+                <div class="button imageviewer_close fa close"></div>
+            </div>
+            <div class="buttons divider">
+                <div class="button imageviewer_expand fa expand"></div>
+            </div>
+            <div class="buttons">
+                <div class="button display imageviewer_prev fa prev"></div>
+                <div class="button display imageviewer_next fa next"></div>
+            </div>
+        </div>
+        <div class="belowcaption max">
+            <div class="mainimage"></div>
+        </div>
+    </div>
+</script>
+
 <script id="textEditorTemplate" type="text/html">
-    <div class="texteditor fullscreenmodule">
+    <div class="texteditor mainpanelmodule">
         <form id="texteditform">
             <div class="caption">{{name}}</div>
-            <div class="content">
+            <div class="content belowcaption">
                 <textarea name="editorcontent" id="editorcontent">{{content}}</textarea>
             </div>
             <div><div class="button positive action_update">Update</div> <div class="button action_cancel">Cancel</div></div>
@@ -157,6 +235,32 @@
     <div class="editor">
         <div class="itemcaption">{{label}}</div>
         <input type="text" name="{{name}}" class="inputBox" value="{{value}}">
+    </div>
+</script>
+
+<script id="formEditorProperties" type="text/html">
+    <div class="propertypanel">
+        <h3>Properties</h3>
+        <div class="item">
+            <div class="label">Layout</div>
+            <div class="property">
+                <select name="layout" class="propertyvalue" onchange="UI.showHidePanelByValue(this,'#layoutextra','custom')">
+                    <option value="block">Labels above input fields</option>
+                    <option value="table">Labels left from input fields</option>
+                    <option value="custom">Custom</option>
+                </select>
+                <input type="hidden" id="layoutvalue" value="{{layout}}">
+            </div>
+            <div class="clear"></div>
+        </div>
+
+        <div class="item hidden" id="layoutextra">
+            <div class="label">Custom class</div>
+            <div class="property">
+                <input class="propertyvalue" type="text" name="customclass" value="{{customclass}}">
+            </div>
+            <div class="clear"></div>
+        </div>
     </div>
 </script>
 
