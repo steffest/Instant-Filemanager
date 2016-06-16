@@ -207,6 +207,18 @@ var UI = (function () {
             DataStore.cancelEditProfile();
         });
 
+        filemanager.on("click",".action_addlanguage",function(){
+            toggleHide("#addlanguagelist")
+        });
+
+        $("#languagelist").on("click",".languageselect",function(){
+            FormBuilder.toggleLanguage(this.id.split("_")[1]);
+        });
+
+        $("#addlanguagelist").on("click",".languageselect",function(){
+            FormBuilder.addLanguage(this.id.split("_")[1]);
+        });
+
         filemanager.on("click",".action_deleteprofile",function(){
             var template = Templates["inlineDialogTemplate"];
             var content = "Are you sure you want to delete this item?";
@@ -926,6 +938,9 @@ var UI = (function () {
                 hide($("#commonrecordcategory"));
                 hide($("#commonrecordaccess"));
                 hide($("#commonrecordtags"));
+                hide($("#commonrecordlanguages"));
+                $("#languagelist").empty();
+                $("#addlanguagelist").empty();
                 break;
             case UISCOPE.LISTEDITOR:
                 unHide(navigationDetailElm.find(".listactions"));

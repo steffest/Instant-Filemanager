@@ -143,12 +143,16 @@ var FormBuilder = (function () {
 
             if (hasMultipleLanguages){
                 var multiEditors = createDiv("languages");
+                $(multiEditors).data("type",type);
+                $(multiEditors).data("name",name);
+                $(multiEditors).data("ext",ext);
+
                 Config.languages.forEach(function(lan){
                     lanValues = value[lan];
                     if (lanValues){
                         var lanName = lan + ":" + name;
                         var lanValue = lanValues[name] || "";
-                        var lanEditor = createDiv("languageeditor language_" + lan);
+                        var lanEditor = createDiv("languageeditor language_" + lan  + " flag_" + lan);
                         self.addEditorElement(lanEditor,type,lanName,lanValue,ext);
                         multiEditors.appendChild(lanEditor);
                     }
@@ -184,7 +188,6 @@ var FormBuilder = (function () {
                 hasHTML = true;
 
                 postProccessing.push(function(){
-                    console.error('HTMLEDITOR.init ' + name);
                     HTMLEDITOR.init(name);
                 });
                 break;
@@ -467,6 +470,64 @@ var FormBuilder = (function () {
         }else{
             DataStore.listTag(elm.innerHTML);
         }
+    };
+
+    self.setLanguageList = function(activeLanguages){
+        $("#commonrecordlanguage").removeClass("hidden");
+        var container = $("#languagelist");
+        container.empty();
+        var lanActive = {};
+        activeLanguages.forEach(function(lan){
+            var lanSelect = createDiv("languageselect flag_" + lan,"languageselect_" + lan);
+            lanSelect.innerHTML = Config.languageNames[lan];
+            container.append(lanSelect);
+            lanActive[lan] = true;
+        });
+
+        container = $("#addlanguagelist");
+        container.empty().addClass('hidden');
+        Config.languages.forEach(function(lan){
+            if (!lanActive[lan]){
+                var lanSelect = createDiv("languageselect flag_" + lan,"languageselect_" + lan);
+                lanSelect.innerHTML = Config.languageNames[lan];
+                container.append(lanSelect);
+            }
+        });
+    };
+
+    self.toggleLanguage = function(lan){
+        $(".language_" + lan).toggle();
+        $("#languageselect_" + lan).toggleClass("inactive");
+    };
+
+    self.addLanguage = function(lan){
+        postProccessing = [];
+        var editors = $(".formcontent").find(".languages");
+
+        editors.each(function(index,editor){
+            var type = $(editor).data("type");
+            var name = $(editor).data("name");
+            var ext = $(editor).data("ext");
+
+            var lanName = lan + ":" + name;
+            var lanValue = "";
+            var lanEditor = createDiv("languageeditor language_" + lan + " flag_" + lan);
+            self.addEditorElement(lanEditor,type,lanName,lanValue,ext);
+            editor.appendChild(lanEditor);
+
+        });
+
+        executeFormPostProcessor();
+
+        var input = document.getElementsByName("activelanguages");
+        if (input && input.length) input = input[0];
+        if (input){
+            input.value += "," + lan;
+        }
+
+        $('#languagelist').append($('#languageselect_' + lan));
+
+
     };
 
     return self;

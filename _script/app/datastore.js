@@ -209,7 +209,7 @@ var DataStore = (function () {
     function renderProfileForm(profile,id,fields,ext){
         Api.get("data/" + profile + "/" + id,function(data){
             if (id==0){
-                if (data.multiLanguage){
+                if (data && data.multiLanguage){
                     // add Empty Default Language
                     // TODO: active language should be added
                     data[Config.defaultLanguage] = {id: 0};
@@ -218,7 +218,6 @@ var DataStore = (function () {
                 }
             }
 
-            //if (data.multiLanguage && data.en) data = data.en;
             console.log(data);
             if (data){
                 var formContainer = editorContainer.find(".formcontent");
@@ -257,9 +256,14 @@ var DataStore = (function () {
 
                     if (data.multiLanguage){
                         var activeLanguages = [];
+
+
+
                         Config.languages.forEach(function(lan){
                             if (data[lan]) activeLanguages.push(lan);
                         });
+
+                        FormBuilder.setLanguageList(activeLanguages);
                         FormBuilder.addEditorElement(formContainer[0],FORMEDITOR.HIDDEN,"activelanguages",activeLanguages.join((",")));
                     }
 
