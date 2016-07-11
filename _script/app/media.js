@@ -5,6 +5,9 @@ var Media = (function () {
     var imagePreviewElm;
     var imagePreviewElmSender;
 
+    var imageQueue = [];
+    var loadedQueue = {};
+
     self.isImage = function(path){
         return FileSystem.getFileType(path) == FILETYPE.IMAGE;
     };
@@ -19,13 +22,28 @@ var Media = (function () {
         var icon = createDiv();
         var url = Media.getFileIconUrl(path,width);
         if (url){
-            //icon.style.backgroundImage = "url('" + url + "')";
-            var img = new Image();
-            img.src = url;
-            img.onload = function(){
-                //icon.appendChild(img);
-                icon.style.backgroundImage = "url('" + url + "')";
+
+            var preload = true;
+            var queue = true; // rapid requests to the same server causes lot's of loading errors/blank icons?
+
+            if (queue){
+                self.AddImageQueue(url,icon);
+            }else{
+                if (preload){
+                    var img = new Image();
+                    img.src = url;
+                    img.onload = function(){
+                        icon.style.backgroundImage = "url('" + url + "')";
+                    };
+                    img.onerror = function(){
+                        console.error("error loading image " + url);
+                    }
+                }else{
+                    icon.style.backgroundImage = "url('" + url + "')";
+                }
             }
+
+            //
         }else{
             // default to Font Awesome Icon
             var ext = FileSystem.getFileExtention(path);
@@ -48,6 +66,14 @@ var Media = (function () {
             // TODO: maybe look for thumb in sideCar file?
             return undefined;
         }
+    };
+
+    self.getImageInfo = function(path,callback){
+        var url = "image/info" + path;
+        url += "?r=" + new Date().getTime();
+        Api.get(url,function(data){
+            if (callback) callback(data);
+        })
     };
 
 
@@ -174,6 +200,59 @@ var Media = (function () {
         }
         return i;
     };
+
+    loadNextImageInQueue = function(){
+        if (imageQueue.length){
+            var info = imageQueue[0];
+
+            if (loadedQueue[info.url]){
+                // already loaded
+                info.parent.style.backgroundImage = "url('" + info.url + "')";
+                imageQueue.shift();
+                if (imageQueue.length) loadNextImageInQueue();
+            }else{
+                var img = new Image();
+                img.src = info.url;
+                img.retrycount = 0;
+                img.onload = function(){
+                    loadedQueue[info.url] = true;
+                    info.parent.style.backgroundImage = "url('" + info.url + "')";
+                };
+                img.onerror = function(){
+                    console.error("error loading image " + info.url);
+                    if (img.retrycount < 1){
+                        img.retrycount++;
+                        imageQueue.push(info);
+                    }
+                };
+
+                setTimeout(function(){
+                    if (imageQueue.length) {
+                        imageQueue.shift();
+                        loadNextImageInQueue();
+                    }
+                },40)
+            }
+        }
+    };
+
+    self.AddImageQueue = function(url,parent){
+        imageQueue.push({
+            url: url,
+            parent: parent
+        });
+        initImageQueue();
+    };
+
+    initImageQueue = function(){
+        if (imageQueue.length==1) loadNextImageInQueue();
+    };
+
+    self.clearImageQueue = function(){
+        imageQueue = [];
+    };
+
+
 
     return self;
 })();

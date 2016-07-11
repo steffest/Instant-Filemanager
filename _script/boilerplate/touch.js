@@ -175,6 +175,9 @@ var Touch = (function () {
             currentTouchData.lastScale = currentTouchData.lastScale || 1;
             currentTouchData.lastRotation = currentTouchData.lastRotation || 0;
 
+
+            if (currentTouchData.onDown) currentTouchData.onDown(touchEvents);
+
         }
 
     }

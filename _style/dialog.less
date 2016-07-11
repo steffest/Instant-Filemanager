@@ -1,0 +1,75 @@
+@import "var";
+
+#dialogbox{
+  position: absolute;
+  border: 1px solid grey;
+  background-color: white;
+  left: 10%;
+  right:10%;
+  top: 10%;
+  bottom: 10%;
+  box-shadow: 1px 1px 10px black;
+  z-index: 2000000;
+
+  .dialogbuttons{
+    width: 100%;
+    padding: 10px;
+    position: absolute;
+    bottom:0;
+    text-align: right;
+  }
+
+  .dialogcontent{
+    background-color: white;
+    position: absolute;
+    top: 26px;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    overflow: scroll;
+    overflow-x: hidden;
+
+  }
+
+  .dialogselection{
+    position: absolute;
+    height: 60px;
+    left: 100px;
+    right: 10px;
+    top: 10px;
+
+    small{
+      display: block;
+      font-size: 0.8em;
+      color: @commentColor;
+      padding: 4px 0;
+    }
+  }
+
+  .dialogpreview{
+    position: absolute;
+    height: 80px;
+    width: 80px;
+    left: 10px;
+    bottom: 10px;
+    border: 1px solid @itemBorder;
+
+    div{
+      width: 100%;
+      height: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center center;
+    }
+  }
+
+
+  footer{
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100px;
+    background-color: @backgroundDark;
+  }
+}

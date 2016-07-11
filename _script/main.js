@@ -18,22 +18,7 @@ $(document).on("ready",function(){
 
         App.login(function(isLoggedIn){
            if (isLoggedIn){
-               UI.addNavigationPanes(container);
-               UI.setNavigationPanesTitle("username",App.getCurrentUser().userName);
-               DataStore.addTags();
-               DataStore.addProfiles(Config.get("profiles"));
-
-               if (App.isSystemAdmin()){
-
-               }
-
-               if (App.isAdmin()){
-                   DataStore.addProfiles(Config.get("adminProfiles"));
-                   UI.addSections(Config.get("adminSections"));
-               }
-
-               UI.addSections(Config.get("sections"));
-
+               UI.init(container);
            }else{
                var template = Mustache.render(Templates["loginTemplate"],{title: Config.title(), version: Config.get("version")});
                container.append(template);

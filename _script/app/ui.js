@@ -58,6 +58,30 @@ var UI = (function () {
     var currentUIScope;
 
     var initDone = {};
+    var screenwidth;
+
+    self.init = function(container){
+        screenwidth = $(window).width();
+        UI.addNavigationPanes(container);
+        UI.setNavigationPanesTitle("username",App.getCurrentUser().userName);
+        DataStore.addTags();
+        DataStore.addProfiles(Config.get("profiles"));
+
+        if (App.isAdmin()){
+            DataStore.addProfiles(Config.get("adminProfiles"));
+            UI.addSections(Config.get("adminSections"));
+        }
+
+        UI.addSections(Config.get("sections"));
+
+        if (App.isSystemAdmin()){
+            self.addSection("Admin","admin");
+        }
+
+        if (screenwidth<800){
+            UI.toggleFileDetail();
+        }
+    };
 
     self.getCurrentProfile = function(){
         return currentProfile;
@@ -90,7 +114,10 @@ var UI = (function () {
             format: 'DD/MM/YYYY'
         });
 
-        UI_DRAG_DROP.init();
+        if (screenwidth>=800){
+            UI_DRAG_DROP.init();
+        }
+
     };
 
     self.getNavigationPane = function(section){
@@ -208,7 +235,16 @@ var UI = (function () {
         });
 
         filemanager.on("click",".action_addlanguage",function(){
-            toggleHide("#addlanguagelist")
+            toggleHide("#addlanguagelist");
+            toggleHide("#addlistlanguagelist");
+        });
+
+        filemanager.on("click",".action_togglesidebar",function(){
+            self.toggleSidebar();
+        });
+
+        filemanager.on("click",".action_togglefiledetail",function(){
+            self.toggleFileDetail();
         });
 
         $("#languagelist").on("click",".languageselect",function(){
@@ -217,6 +253,19 @@ var UI = (function () {
 
         $("#addlanguagelist").on("click",".languageselect",function(){
             FormBuilder.addLanguage(this.id.split("_")[1]);
+        });
+
+        $("#listlanguagelist").on("click",".languageselect",function(){
+            DataStore.editList(undefined,undefined,this.id.split("_")[1]);
+        });
+
+        $("#addlistlanguagelist").on("click",".languageselect",function(){
+            FormBuilder.addListLanguage(this.id.split("_")[1]);
+        });
+
+        $("#commoncategory").on("change",function(){
+            var category = this.value;
+            DataStore.renderProfileFormCategoryFields(category);
         });
 
         filemanager.on("click",".action_deleteprofile",function(){
@@ -240,6 +289,20 @@ var UI = (function () {
             UI.inlineDialog(config);
         });
 
+
+        filemanager.on("click",".action_duplicateprofile",function(){
+            DataStore.duplicateProfile();
+        });
+
+        filemanager.on("click",".action_toggleformeditor",function(){
+           var elm = $(this).next();
+            console.error(elm);
+            if (elm.hasClass("languages") || elm.hasClass("languageeditor_all")){
+                elm.slideToggle("fast");
+                $(this).find("i.fa").toggleClass("fa-caret-down").toggleClass("fa-caret-right");
+            }
+        });
+
         listManagerBindings();
 
     };
@@ -253,12 +316,17 @@ var UI = (function () {
 
         navigationFolderElm.on("click",".menu",function(){
             var id = $(this).data("id");
-            DataStore.editList(id);
+            DataStore.editList(id,"menu");
         });
 
         navigationFolderElm.on("click",".form",function(){
             var id = $(this).data("id");
             DataStore.editList(id);
+        });
+
+        navigationFolderElm.on("click",".command",function(){
+            var command = $(this).data("command");
+            self.handleCommand(command);
         });
 
         navigationDetailElm.on("click",".action_closelist",function(){
@@ -322,9 +390,16 @@ var UI = (function () {
 
         navigationFolderElm.on("click",".directory .label",function(){
             var elm = $(this).closest(".directory");
+            var content = elm.find(".content");
             currentDirectoryElm = elm;
             console.log("click directory",elm);
-            FileSystem.getDirectory(elm);
+            if (content && $.trim(content.html())){
+                content.empty();
+                elm.find(".label").removeClass("open");
+            }else{
+                FileSystem.getDirectory(elm);
+            }
+
         });
 
         filemanager.on("click",".file",function(e){
@@ -441,6 +516,21 @@ var UI = (function () {
             });
         });
 
+        filemanager.on("click",".action_rotateright",function(){
+            var pathInfo = self.getSelectedPath();
+            FileSystem.rotateImage(pathInfo.path,90,function(){
+                self.refreshCurrentDirectory();
+                self.refreshCurrentFileDetail(true);
+            });
+        });
+
+        filemanager.on("click",".action_editimage",function(){
+            var pathInfo = self.getSelectedPath();
+            var url = "plugin/imageeditor/?f=" +   pathInfo.path;
+            window.open(url);
+
+        });
+
         filemanager.on("click",".action_converttomp4",function(){
             var pathInfo = self.getSelectedPath();
             $(this).html("queued").removeClass("action_converttomp4");
@@ -457,6 +547,11 @@ var UI = (function () {
         filemanager.on("click",".action_edithtml",function(){
             var fileInfo = self.getSelectedPath();
             Editor.editTextFile(fileInfo,true);
+        });
+
+        filemanager.on("click",".action_editcode",function(){
+            var fileInfo = self.getSelectedPath();
+            Editor.editCodeFile(fileInfo,true);
         });
 
         filemanager.on("click",".action_upload",function(){
@@ -648,7 +743,7 @@ var UI = (function () {
 
         var parent = $(createDiv("sectionlist"));
 
-        var item = $(createDiv("section fa section" + section));
+        var item = $(createDiv("section faw section" + section));
         item.data("section",section);
         item.html(label);
 
@@ -660,41 +755,28 @@ var UI = (function () {
 
 
     self.refreshSection = function(){
-        self.initSection(currentProfileElm,currentProfile);
+        self.initSection(currentProfileElm,currentProfile,true);
     };
 
-    self.initSection = function(sender,section){
+    self.initSection = function(sender,section,refresh){
         console.log("init section " + section,sender);
         var submenu = $(sender).next();
 
         currentProfile = section;
         currentProfileElm = sender;
 
+        var genericSectionUrl;
+
         switch(section){
             case "menu":
-                if (submenu.hasClass("sectionsubmenu")) {
-                    submenu.empty();
-                }else {
-                    submenu = $(createDiv("sectionsubmenu"));
-                    submenu.insertAfter(sender);
-                }
-                var url = "data/menu/?fields=id,name";
-                self.listSectionContent(url,"menu",submenu);
-                break;
+                genericSectionUrl = "data/menu/?fields=id,name";
                 break;
             case "form":
-                if (submenu.hasClass("sectionsubmenu")) {
-                    submenu.empty();
-                }else {
-                    submenu = $(createDiv("sectionsubmenu"));
-                    submenu.insertAfter(sender);
-                }
-                var url = "data/form/?fields=id,name";
-                self.listSectionContent(url,"form",submenu);
+                genericSectionUrl = "data/form/?fields=id,name";
                 break;
             case "filemanager":
                 if (submenu.hasClass("sectionsubmenu")) {
-                    submenu.show();
+                    submenu.toggle();
                 }else {
                     submenu = createDiv("sectionsubmenu");
                     $(submenu).insertAfter(sender);
@@ -724,6 +806,45 @@ var UI = (function () {
                     }
                 }
                 break;
+            case "admin":
+                if (submenu.hasClass("sectionsubmenu")) {
+                    submenu.toggle();
+                }else {
+                    submenu = createDiv("sectionsubmenu");
+                    $(submenu).insertAfter(sender);
+
+                    self.addSectionItem("Tags","tags","editfile:system/tags.txt",submenu);
+
+                    DataStore.addProfiles(Config.get("systemAdminProfiles"),submenu);
+
+
+                    var paths = Config.get("systemAdminFilemanagerFolders");
+                    if (paths){
+                        paths.forEach(function(pathInfo){
+                            FileSystem.addFileManager(pathInfo.path,pathInfo.title,submenu);
+                        })
+                    }
+
+
+                }
+                break;
+        }
+
+        if (genericSectionUrl){
+            if (submenu.hasClass("sectionsubmenu")) {
+                if (refresh) {
+                    submenu.empty();
+                }else{
+                    submenu.remove();
+                    submenu = false;
+                }
+            }else {
+                submenu = $(createDiv("sectionsubmenu"));
+                submenu.insertAfter(sender);
+            }
+            if (submenu){
+                self.listSectionContent(genericSectionUrl,section,submenu);
+            }
         }
     };
 
@@ -737,14 +858,14 @@ var UI = (function () {
                 for (var i = 0, len = data.length; i<len; i++){
                     var item = data[i];
 
-                    var elm = createDiv(profile + " fa");
+                    var elm = createDiv(profile + " faw");
                     elm.innerHTML = item.name;
                     $(elm).data("id",item.id);
                     container.append(elm);
 
 
                     var listElm = createDiv("record listitem accepttag");
-                    var label = createDiv("label fa");
+                    var label = createDiv("label faw");
                     label.innerHTML = item.name;
 
                     listElm.appendChild(label);
@@ -756,6 +877,13 @@ var UI = (function () {
                 }
             }
         })
+    };
+
+    self.addSectionItem = function(label,className,command,container){
+        var elm = createDiv(className + " faw command");
+        elm.innerHTML = label;
+        $(elm).data("command",command);
+        $(container).append(elm);
     };
 
     self.listDirectories = function(senderElm,directories){
@@ -773,7 +901,7 @@ var UI = (function () {
 
                 var elm = createDiv("directory");
 
-                var label = createDiv("label fa");
+                var label = createDiv("label faw");
                 label.innerHTML = item;
 
                 var content = createDiv("content");
@@ -787,15 +915,42 @@ var UI = (function () {
         }
     };
 
-    self.listFiles = function(senderElm,directories,files){
-        var basePath = senderElm.data("directory");
+    self.listFiles = function(senderElm,directories,files,config){
+        var basePath;
+        var container;
+        var parent;
+        var thisDisplayOptions;
 
-        var container = $(".filelist");
+        if (senderElm){
+            basePath = senderElm.data("directory");
+            self.deselectFile();
+        }else{
+            basePath = config.basePath;
+        }
+
+        if (config){
+            basePath = config.basePath;
+            container = config.container;
+            parent = config.parentPath;
+            thisDisplayOptions = config.displayOptions || displayOptions;
+        }else{
+            basePath = senderElm.data("directory");
+            container = $(".filelist");
+            thisDisplayOptions = displayOptions;
+        }
+
         container.empty();
+        Media.clearImageQueue();
 
-        var parent = senderElm.closest(".content").parent();
+        var searchBox = createSearchBox("listitemsearch filesearch",null,function(){
+            var value = this.value.toLowerCase();
+            UI.filterListItems(container,value);
+        });
+        container.append(searchBox);
 
-        if (parent.length>0){
+        if (senderElm) parent = senderElm.closest(".content").parent();
+
+        if (parent && parent.length>0){
             var elm = createDiv("directoryup");
             var label = createDiv("label");
             label.innerHTML = "...";
@@ -804,7 +959,7 @@ var UI = (function () {
             container.append(elm);
         }
 
-        self.deselectFile();
+
 
         if (directories){
             for (var i = 0, len = directories.length; i<len; i++){
@@ -815,13 +970,13 @@ var UI = (function () {
                 var label = createDiv("label");
                 label.innerHTML = item;
 
-                if (displayOptions.currentDisplayMode != LISTDISPLAYMODE.LIST){
+                if (thisDisplayOptions.currentDisplayMode != LISTDISPLAYMODE.LIST){
                     var icon = createDiv("fileicon");
-                    var iconContent = Media.getFolderIcon(item.path,displayOptions.currentDisplayMode.iconSize);
+                    var iconContent = Media.getFolderIcon(item.path,thisDisplayOptions.currentDisplayMode.iconSize);
                     icon.appendChild(iconContent);
                     elm.appendChild(icon);
                 }else{
-                    label.classList.add("fa");
+                    label.classList.add("faw");
                 }
 
                 elm.appendChild(label);
@@ -833,11 +988,11 @@ var UI = (function () {
 
         if (files){
             for (var i = 0, len = files.length; i<len; i++){
-                container.append(createFileItem(basePath,files[i]));
+                container.append(createFileItem(basePath,files[i],thisDisplayOptions));
             }
         }
 
-        if (displayOptions.showTags){
+        if (thisDisplayOptions.showTags && Config.get("useFileTags")){
             self.refreshFileTags();
         }
     };
@@ -845,6 +1000,7 @@ var UI = (function () {
     self.listObjects = function(data,filterData){
         var container = $(".filelist");
         container.empty();
+        Media.clearImageQueue();
 
         if (currentUIScope == UISCOPE.TAGS){
             currentListViewConfig.tag = filterData;
@@ -861,7 +1017,9 @@ var UI = (function () {
         }
     };
 
-    function createFileItem(basePath,item){
+    function createFileItem(basePath,item,thisDisplayOptions){
+        thisDisplayOptions = thisDisplayOptions || displayOptions;
+
         var fileType = FileSystem.getFileType(item);
         var path = basePath + item;
 
@@ -873,18 +1031,18 @@ var UI = (function () {
         var label = createDiv("label");
         label.innerHTML = item;
 
-        if (displayOptions.currentDisplayMode != LISTDISPLAYMODE.LIST){
+        if (thisDisplayOptions.currentDisplayMode != LISTDISPLAYMODE.LIST){
             var icon = createDiv("fileicon");
-            var iconContent = Media.getFileIcon(path,displayOptions.currentDisplayMode.iconSize);
+            var iconContent = Media.getFileIcon(path,thisDisplayOptions.currentDisplayMode.iconSize);
             icon.appendChild(iconContent);
             elm.appendChild(icon);
         }else{
-            label.classList.add("fa");
+            label.classList.add("faw");
         }
 
         elm.appendChild(label);
 
-        if (displayOptions.showTags){
+        if (thisDisplayOptions.showTags){
             var tags = createDiv("tags");
             elm.appendChild(tags);
         }
@@ -897,20 +1055,24 @@ var UI = (function () {
     self.deselectFile = function(){
         currentFile = undefined;
         var container = navigationDetailElm;
-        container.find(".info").empty();
-        hide(container.find(".directoryactions"));
-        hide(container.find(".fileactions"));
-        hide(container.find(".recordactions"));
-        var preview = container.find(".preview").empty().get(0);
-        preview.className = "preview directoryicon";
-        self.resetInlineDialog();
-        FormBuilder.clearTagEditor();
-        navigationFilesElm.find(".selected").removeClass("selected");
-        currentListViewConfig.selection = [];
+        if (container){
+            container.find(".info").empty();
+            hide(container.find(".directoryactions"));
+            hide(container.find(".fileactions"));
+            hide(container.find(".recordactions"));
+            var preview = container.find(".preview").empty().get(0);
+            preview.className = "preview directoryicon";
+            self.resetInlineDialog();
+            FormBuilder.clearTagEditor();
+            navigationFilesElm.find(".selected").removeClass("selected");
+            currentListViewConfig.selection = [];
+        }
     };
 
 
     self.setScope = function(UIScope){
+
+        if (!navigationDetailElm) return;
 
         // clear UI;
         self.deselectFile();
@@ -925,11 +1087,11 @@ var UI = (function () {
         switch(UIScope){
             case UISCOPE.FILES:
                 unHide(navigationDetailElm.find(".containeractions"));
-                unHide(tagListContainer);
+                if (Config.get("useFileTags")) unHide(tagListContainer);
                 break;
             case UISCOPE.PROFILES:
                 unHide(navigationDetailElm.find(".profileactions"));
-                unHide(tagListContainer);
+                if (Config.get("useFileTags")) unHide(tagListContainer);
                 break;
             case UISCOPE.PROFILEEDITOR:
                 unHide(navigationDetailElm.find(".recordactions"));
@@ -1050,6 +1212,8 @@ var UI = (function () {
                 var rotateright = createDiv("action action_rotateright");
                 rotateright.innerHTML = "Rotate right";
                 infoContainer.append(rotateright);
+
+                unHide(".action_editimage");
             }
 
             if (fileType == FILETYPE.VIDEO){
@@ -1091,6 +1255,8 @@ var UI = (function () {
 
         setVisible(".action_edittext",fileType.textEditor);
         setVisible(".action_edithtml",fileType.htmlEditor);
+        setVisible(".action_editcode",fileType.codeEditor);
+        setVisible(".action_editimage",fileType.imageEditor);
 
         hide(container.find(".directoryactions"));
         var actionContainer = container.find(".fileactions");
@@ -1105,6 +1271,7 @@ var UI = (function () {
         hide(navigationDetailElm.find(".containeractions"));
         hide(".action_edittext");
         hide(".action_edithtml");
+        hide(".action_editimage");
         hide(".action_fileopen");
         hide(".action_filerename");
         hide(".preview");
@@ -1201,6 +1368,9 @@ var UI = (function () {
     self.refreshListView = function(){
         if (currentUIScope == UISCOPE.FILES){
             self.refreshCurrentDirectory();
+        }
+        if (currentUIScope == UISCOPE.PROFILES){
+           DataStore.refreshListProfile();
         }
         if (currentUIScope == UISCOPE.TAGS && currentListViewConfig.tag){
             DataStore.listTag(currentListViewConfig.tag);
@@ -1373,6 +1543,23 @@ var UI = (function () {
 
     }
 
+    self.handleCommand = function(command){
+        var parts = command.split(":");
+        var action = parts[0];
+        var target = parts.length>1? parts[1] : "";
+
+        switch (action){
+            case "editfile":
+                //alert(target);
+                var fileInfo = {
+                    path: target
+                };
+                Editor.editCodeFile(fileInfo);
+                break;
+        }
+
+    };
+
     self.setDisplayOptions = function(displayMode,showTags){
         if (isDefined(displayMode)) displayOptions.currentDisplayMode = displayMode;
         if (isDefined(showTags)) displayOptions.showTags = showTags;
@@ -1402,6 +1589,26 @@ var UI = (function () {
         }
     };
 
+    self.toggleSidebar = function(){
+        var buttonIcon = $(".action_togglesidebar").find(".fa");
+        filemanager.toggleClass('nosidebar');
+        if (filemanager.hasClass("nosidebar")){
+            buttonIcon.removeClass("fa-angle-double-left").addClass("fa-angle-double-right")
+        }else{
+            buttonIcon.removeClass("fa-angle-double-right").addClass("fa-angle-double-left")
+        }
+    };
+
+    self.toggleFileDetail = function(){
+        var buttonIcon = $(".action_togglefiledetail").find(".fa");
+        filemanager.toggleClass('nofiledetail');
+        if (filemanager.hasClass("nofiledetail")){
+            buttonIcon.removeClass("fa-angle-double-left").addClass("fa-angle-double-right")
+        }else{
+            buttonIcon.removeClass("fa-angle-double-right").addClass("fa-angle-double-left")
+        }
+    };
+
     self.showHidePanelByValue = function(source,target,value){
         if (source && $(source).val() == value){
             $(target).show();
@@ -1423,6 +1630,27 @@ var UI = (function () {
                 $(this).toggle(this.innerHTML.toLowerCase().indexOf(s)>=0);
             });
         }
+
+    }
+
+    self.filterListItems = function(container,value){
+        container.find(".listitem").each(function(){
+            var $this = $(this);
+            if ($this.find(".label").html().toLowerCase().indexOf(value)<0){
+                $this.hide();
+            }else{
+                $this.show();
+            }
+        });
+    };
+
+    self.showDialog = function(config){
+        filemanager.addClass("cover");
+        config = config || {};
+        config.parent = $("body");
+        config.title = "Select file";
+
+        Dialog.show(config);
 
     };
 

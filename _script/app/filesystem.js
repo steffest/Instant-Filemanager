@@ -1,9 +1,9 @@
 var FILETYPE = {
     TEXT:{name: "text file", textEditor: true, iconClass: "text"},
-    HTML:{name: "html file", textEditor: true, htmlEditor: true , iconClass: "text"},
-    IMAGE: {name: "image", iconClass: "img"},
-    CODE: {name: "code file" , textEditor: true},
-    CSS: {name: "stylesheet" , textEditor: true},
+    HTML:{name: "html file", textEditor: true, htmlEditor: true , codeEditor: true, iconClass: "text"},
+    IMAGE: {name: "image", iconClass: "img", imageEditor: true},
+    CODE: {name: "code file" , textEditor: true, codeEditor: true},
+    CSS: {name: "stylesheet" , textEditor: true, codeEditor: true},
     VIDEO: {name: "video", iconClass: "video"},
     AUDIO: {name: "audio" , iconClass: "audio"},
     FILE:{name: "file"}
@@ -25,7 +25,7 @@ var FileSystem = (function () {
         var directory = createDiv("directory");
         $(directory).data("directory",rootDirectory);
 
-        var labelElm = createDiv("label fa open");
+        var labelElm = createDiv("label faw open");
         labelElm.innerHTML = label;
         var content = createDiv("content");
 
@@ -167,7 +167,7 @@ var FileSystem = (function () {
         if (ext == ".html" || ext == ".htm"){
             result = FILETYPE.HTML;
         }
-        if (ext == ".js" || ext == ".asp" || ext == ".php" || ext == ".vb" || ext == ".cs" || ext == ".css" || ext == ".aspx" || ext == ".jsp"){
+        if (ext == ".js" || ext == ".asp" || ext == ".php" || ext == ".vb" || ext == ".cs" || ext == ".css" || ext == ".aspx" || ext == ".jsp" || ext == ".json" || ext == ".translation"){
             result = FILETYPE.CODE;
         }
         if (ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".png" || ext == ".bmp"){

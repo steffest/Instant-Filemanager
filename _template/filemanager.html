@@ -16,6 +16,7 @@
 
 <script id="filemanagerTemplate" type="text/html">
     <div class="filemanager fullscreenmodule">
+        <div class="blanket"></div>
         <div class="panes">
             <div class="filecontainer">
                 <div class="mainpanel">
@@ -42,119 +43,174 @@
                 </div>
             </div>
             <div class="directorycontainer">
-                <div class="caption borderright">{{title}}</div>
+                <div class="caption borderright"><div class="button action_togglesidebar"><i class="fa fa-angle-double-left" aria-hidden="true"></i></div>{{title}}</div>
                 <div class="foldercontainer"></div>
             </div>
 
             <div class="filedetail">
-                <div class="caption right">Location:</div>
+                <div class="caption right"><div class="button action_togglefiledetail"><i class="fa fa-angle-double-left" aria-hidden="true"></i></div></div>
                 <div class="preview"></div>
-                <div class="info"></div>
+                <div class="info hideoncollapse"></div>
                 <div class="actions">
                     <div class="fileactions hidden">
-                        <div class="caption">File actions</div>
-                        <div class="action_fileopen action"><i class="fa fa-angle-double-right"></i> Open</div>
-                        <div class="action_filerename action"><i class="fa fa-ellipsis-h"></i> Rename</div>
-                        <div class="action_filedelete action"><i class="fa fa-close"></i> Delete</div>
-                        <div class="action_filecopy hidden action">copy</div>
-                        <div class="action_edittext action"><i class="fa fa-edit"></i> Edit as Text</div>
-                        <div class="action_edithtml action"><i class="fa fa-code"></i> Edit as HTML</div>
+                        <div class="collapsedactions">
+                            <div class="button icon action_fileopen"><i class="fa fa-eye"></i></div>
+                            <div class="button icon action_filedelete"><i class="fa fa-trash-o"></i></div>
+                            <div class="button icon action_editimage"><i class="fa fa-edit"></i></div>
+                            <br><br>
+                        </div>
+
+                        <div class="expandedactions hideoncollapse">
+                            <div class="caption">File actions</div>
+                            <div class="action_fileopen action"><i class="fa fa-angle-double-right"></i> Open</div>
+                            <div class="action_filerename action"><i class="fa fa-ellipsis-h"></i> Rename</div>
+                            <div class="action_filedelete action"><i class="fa fa-close"></i> Delete</div>
+                            <div class="action_filecopy hidden action">copy</div>
+                            <div class="action_edittext action"><i class="fa fa-edit"></i> Edit as Text</div>
+                            <div class="action_edithtml action"><i class="fa fa-code"></i> Edit as HTML</div>
+                            <div class="action_editcode action"><i class="fa fa-code"></i> Edit as Code</div>
+                            <div class="action_editimage action"><i class="fa fa-edit"></i> Edit Image</div>
+                        </div>
                     </div>
-                    <div class="directoryactions hidden">
+                    <div class="directoryactions hidden hideoncollapse">
                         <div class="caption">Directory actions</div>
                         <div class="action_directoryopen action"><i class="fa fa-angle-double-right"></i> Open</div>
                         <div class="action_filerename action"><i class="fa fa-ellipsis-h"></i> Rename</div>
                         <div class="action_directorydelete action"><i class="fa fa-close"></i> Delete</div>
                         <div class="action_directorycopy hidden action">copy</div>
                     </div>
-                    <div class="containeractions">
-                        <div class="caption">Add</div>
-                        <div class="action_upload action"><i class="fa fa-upload"></i> Upload</div>
-                        <div class="uploadbar hidden">
-                                <div style='height: 0;width:0; overflow:hidden;'>
-                                    <input id="fileupload" type="file" name="files[]" multiple="false" capture="camera">
+                    <div class="containeractions hidden">
+                        <div class="collapsedactions">
+                            <div class="button icon action_upload"><i class="fa fa-upload"></i></div>
+                            <div class="button icon action_filecreate"><i class="fa fa-plus"></i></div>
+                        </div>
+                        <div class="expandedactions hideoncollapse">
+                            <div class="caption">Add</div>
+                            <div class="action_upload action"><i class="fa fa-upload"></i> Upload</div>
+                            <div class="uploadbar hidden">
+                                    <div style='height: 0;width:0; overflow:hidden;'>
+                                        <input id="fileupload" type="file" name="files[]" multiple="false" capture="camera">
+                                    </div>
+                                    <!-- The global progress bar -->
+                                    <div id="progress">
+                                        <div class="bar" style="width: 0%;"></div>
+                                    </div>
+
+                                    <!-- The container for the uploaded files -->
+                                    <div id="files" class="files"></div>
                                 </div>
-                                <!-- The global progress bar -->
-                                <div id="progress">
-                                    <div class="bar" style="width: 0%;"></div>
-                                </div>
-
-                                <!-- The container for the uploaded files -->
-                                <div id="files" class="files"></div>
-                            </div>
 
 
-                        <div class="action_filecreate action"><i class="fa fa-plus-square-o"></i> Create File</div>
-                        <div class="action_directorycreate action"><i class="fa fa-plus-square-o"></i> Create Directory</div>
+                            <div class="action_filecreate action"><i class="fa fa-plus-square-o"></i> Create File</div>
+                            <div class="action_directorycreate action"><i class="fa fa-plus-square-o"></i> Create Directory</div>
+                        </div>
                     </div>
 
                     <div class="recordactions hidden">
-                        <div class="caption">Item</div>
-                        <div class="action positive action_updateprofile"> <i class="fa fa-check-square-o"></i> Save</div>
-                        <div class="action action_cancelprofile"><i class="fa fa-arrow-left"></i> Close</div>
-                        <div class="action negative action_deleteprofile"><i class="fa fa-remove"></i> Delete</div>
+                        <div class="collapsedactions">
+                            <div class="button icon action_updateprofile"><i class="fa fa-check-square-o"></i></div>
+                            <div class="button icon action_cancelprofile"><i class="fa fa-arrow-left"></i></div>
+                            <div class="button icon action_deleteprofile"><i class="fa fa-trash-o"></i></div>
+                        </div>
 
-                        <div id="commonrecordlanguages hidden">
-                            <div class="caption margin">Languages</div>
-                            <div id="languagelist">
+                        <div class="expandedactions hideoncollapse">
+                            <div class="caption">Item</div>
+                            <div class="action positive action_updateprofile"> <i class="fa fa-check-square-o"></i> Save</div>
+                            <div class="action action_cancelprofile"><i class="fa fa-arrow-left"></i> Close</div>
+                            <div class="action negative action_deleteprofile"><i class="fa fa-remove"></i> Delete</div>
+                            <div class="action action_duplicateprofile"><i class="fa fa-clone"></i> Duplicate</div>
+
+
+                            <div id="commonrecordlanguages hidden hideoncollapse">
+                                <div class="caption margin">Languages</div>
+                                <div id="languagelist">
+                                </div>
+                                <div class="action positive action_addlanguage"><i class="fa fa-plus-square-o"></i> Add Language</div>
+                                <div id="addlanguagelist">
+                                </div>
                             </div>
-                            <div class="action positive action_addlanguage"><i class="fa fa-plus-square-o"></i> Add Language</div>
-                            <div id="addlanguagelist">
+
+
+                            <div id="commonrecordstate">
+                                <div class="caption margin">Status</div>
+                                <select id="commonstate">
+                                    <option value="published">Published</option>
+                                    <option value="draft">Draft</option>
+                                    <option value="parked">Parked</option>
+                                </select>
+                                <div id="commonpublishdate">
+                                    <div class="datelabel">From</div> <input type="text" id="commonpublishfrom" class="datepicker">
+                                    <div class="clear"></div>
+                                    <div class="datelabel">To</div> <input type="text" id="commonpublishto" class="datepicker">
+                                    <div class="clear"></div>
+                                </div>
                             </div>
-                        </div>
 
+                            <div id="commonrecordcategory">
+                                <div class="caption margin">Category</div>
+                                <select id="commoncategory">
 
-                        <div id="commonrecordstate">
-                            <div class="caption margin">Status</div>
-                            <select id="commonstate">
-                                <option value="published">Published</option>
-                                <option value="draft">Draft</option>
-                                <option value="parked">Parked</option>
-                            </select>
-                            <div id="commonpublishdate">
-                                <div class="datelabel">From</div> <input type="text" id="commonpublishfrom" class="datepicker">
-                                <div class="clear"></div>
-                                <div class="datelabel">To</div> <input type="text" id="commonpublishto" class="datepicker">
-                                <div class="clear"></div>
+                                </select>
                             </div>
-                        </div>
 
-                        <div id="commonrecordcategory">
-                            <div class="caption margin">Category</div>
-                            <select id="commoncategory">
+                            <div id="commonrecordaccess">
+                                <div class="caption margin">Access</div>
+                                <select id="commonaccess">
 
-                            </select>
-                        </div>
+                                </select>
+                            </div>
 
-                        <div id="commonrecordaccess">
-                            <div class="caption margin">Access</div>
-                            <select id="commonaccess">
-
-                            </select>
-                        </div>
-
-                        <div id="commonrecordtags">
-                            <div class="caption margin">Tags</div>
-                            <div id="commontaglist"></div>
+                            <div id="commonrecordtags">
+                                <div class="caption margin">Tags</div>
+                                <div id="commontaglist"></div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="profileactions hidden">
-                        <div class="caption">Add</div>
-                        <div class="action_addrecord action"><i class="fa fa-plus-square-o"></i> New item</div>
+                        <div class="collapsedactions">
+                            <div class="button icon action_addrecord"><i class="fa fa-plus"></i></div>
+                        </div>
+
+                        <div class="expandedactions hideoncollapse">
+                            <div class="caption">Add</div>
+                            <div class="action_addrecord action"><i class="fa fa-plus-square-o"></i> New item</div>
+                        </div>
                     </div>
 
                     <div class="listactions hidden">
-                        <div class="caption">List</div>
-                        <div class="action positive action_updatelist"> <i class="fa fa-check-square-o"></i> Save</div>
-                        <div class="action action_closelist"><i class="fa fa-arrow-left"></i> Close</div>
-                        <div class="action negative action_deletelist"><i class="fa fa-remove"></i> Delete</div>
-                        <div class="caption">Add</div>
-                        <div class="action action_addlistitem"><i class="fa fa-plus-square-o"></i> New item</div>
+
+                        <div class="collapsedactions">
+                            <div class="button icon action_updatelist"><i class="fa fa-check-square-o"></i></div>
+                            <div class="button icon action_closelist"><i class="fa fa-arrow-left"></i></div>
+                            <div class="button icon action_deletelist"><i class="fa fa-trash-o"></i></div>
+                            <br><br>
+                            <div class="button icon action_addlistitem"><i class="fa fa-plus"></i></div>
+                        </div>
+
+                        <div class="expandedactions hideoncollapse">
+
+                            <div class="caption">List</div>
+                            <div class="action positive action_updatelist"> <i class="fa fa-check-square-o"></i> Save</div>
+                            <div class="action action_closelist"><i class="fa fa-arrow-left"></i> Close</div>
+                            <div class="action negative action_deletelist"><i class="fa fa-remove"></i> Delete</div>
+                            <div class="caption">Add</div>
+                            <div class="action action_addlistitem"><i class="fa fa-plus-square-o"></i> New item</div>
+
+                            <div id="commonlistlanguages hidden hideoncollapse">
+                                <br>
+                                <div class="caption margin">Languages</div>
+                                <div id="listlanguagelist">
+                                </div>
+                                <div class="action positive action_addlanguage"><i class="fa fa-plus-square-o"></i> Add Language</div>
+                                <div id="addlistlanguagelist">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
 
-                    <div class="taglistactions hidden">
+                    <div class="taglistactions hidden hideoncollapse">
                         <div class="caption">Tags</div>
                         <div id="commontagsinput">
                             <input type="text" id="commontags" class="inputBox">
@@ -170,6 +226,7 @@
                         <div class="taglist">
                         </div>
                     </div>
+                </div>
             </div>
         </div>
     </div>
@@ -235,6 +292,19 @@
     </div>
 </script>
 
+<script id="codeEditorTemplate" type="text/html">
+    <div class="texteditor mainpanelmodule">
+        <form id="texteditform">
+            <div class="caption">{{name}}</div>
+            <div class="content belowcaption">
+                <pre id="codecontent"></pre>
+                <textarea name="editorcontent" id="editorcontent">{{content}}</textarea>
+            </div>
+            <div><div class="button positive action_update">Update</div> <div class="button action_cancel">Cancel</div></div>
+        </form>
+    </div>
+</script>
+
 <script id="formEditorTemplate" type="text/html">
     <form>
         <div class="formcontent"></div>
@@ -271,6 +341,34 @@
             </div>
             <div class="clear"></div>
         </div>
+    </div>
+</script>
+
+<script id="dialogTemplate" type="text/html">
+    <div class="dialog">
+        <div class="caption">
+            <div class="label">{{title}}</div>
+            <div class="buttons divider">
+                <div class="button right close close_dialog fa"></div>
+            </div>
+            <div class="buttons">
+                <div class="button display display_list fa selected"></div>
+                <div class="button display display_grid fa"></div>
+                <div class="button display display_gridlarge fa"></div>
+            </div>
+        </div>
+        <div class="dialogcontent filelist"></div>
+        <footer>
+            <div class="dialogpreview"></div>
+            <div class="dialogselection"></div>
+            <div class="dialogbuttons">
+                <div class="button confirm_dialog positive w100">OK</div>
+                <div class="button close_dialog w100">Cancel</div>
+
+            </div>
+        </footer>
+
+
     </div>
 </script>
 

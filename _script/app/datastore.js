@@ -5,8 +5,10 @@ var DataStore = (function () {
     var profileListElm;
     var editorContainer;
     var currentProfile;
+    var currentProfileData;
     var currentProfileId;
     var currentSectionItemId;
+    var currentSectionCategory;
 
 
     self.addTags = function(){
@@ -79,44 +81,91 @@ var DataStore = (function () {
 
     };
 
-    self.addProfiles = function(profiles){
+    self.addProfiles = function(profiles,parent){
        if (profiles){
            profiles.forEach(function(profile){
-               self.addProfile(profile.title,profile.profile);
+               self.addProfile(profile.title,profile.profile,parent);
            });
        }
     };
 
-    self.addProfile = function(label,profile){
+    self.addProfile = function(label,profile,parent){
+
         if (!profileListElm){
             var container = $(UI.getNavigationPane(NAVIGATIONPANE.FOLDERS));
             container.append(Templates["profileListTemplate"]);
             profileListElm = container.find(".profilelist");
         }
 
-        var item = $(createDiv("profile fa profile"+profile));
+        var thisParent = profileListElm;
+        if (parent) thisParent = $(parent);
+
+        var item = $(createDiv("profile faw profile"+profile));
         item.data("profile",profile);
         item.html(label);
 
-        profileListElm.append(item);
+        thisParent.append(item);
 
         UI.initProfileManager();
 
     };
 
+    self.refreshListProfile = function(){
+        self.listProfile(currentProfile);
+    };
+
     self.listProfile = function(profile,sender,category){
         var container = UI.getNavigationPane(NAVIGATIONPANE.FILES);
         container.empty();
+        Media.clearImageQueue();
         UI.setScope(UISCOPE.PROFILES);
+        currentProfile = profile;
 
-        var fields="id,name";
-        if (profile == "elpees") fields="id,title as name"; // TODO: FIXME!!
-        if (profile == "pockets") fields="id,title as name"; // TODO: FIXME!!
+        var searchBox = createSearchBox("listitemsearch",null,function(){
+            var value = this.value.toLowerCase();
+            UI.filterListItems(container,value);
+        });
+        container.append(searchBox);
+
+        var fields="id,name,state,tags,category";
+        var orderBy = "orderby=name";
+
+        var getIcon = function(item){
+            var icon = createDiv("fileicon");
+            var div = createDiv("fa fa-file");
+            icon.appendChild(div);
+            return icon;
+        };
+
+        var getTitle=function(item){
+          return item.name;
+        };
+
+        if (profile == "elpees" || profile == "pockets"){
+            // TODO: FIXME!!
+            fields="id,title as name,author,cover";
+            orderBy = "orderby=author,name";
+
+            getTitle=function(item){
+                return item.author + ": " + item.name;
+            };
+
+            getIcon = function(item){
+                var icon = createDiv("fileicon");
+                var div = createDiv();
+                if (item.cover){
+                    Media.AddImageQueue("/laozi/image/200x200/"+profile+"/"+item.cover,div);
+                }else{
+                    div.className = "fa file";
+                }
+                icon.appendChild(div);
+                return icon;
+            };
+        }
 
         var url = "data/" + profile + "/select/" + fields;
         if (category) url = "data/" + profile + "/category/" + category + "?fields=" + fields;
 
-        var orderBy = "orderby=name";
         var suffix = url.indexOf("?")>0 ? "&" : "?";
         url += suffix + orderBy;
 
@@ -126,11 +175,43 @@ var DataStore = (function () {
                     var item = data[i];
 
                     var elm = createDiv("record accepttag listitem");
+                    var label = createDiv("label");
+                    var state = undefined;
+                    var tags= undefined;
+                    var category = undefined;
 
-                    var label = createDiv("label fa");
-                    label.innerHTML = item.name;
+                    if (UI.getDisplayOptions().currentDisplayMode != LISTDISPLAYMODE.LIST){
+                        elm.appendChild(getIcon(item));
+                    }else{
+                        label.classList.add("faw");
+                        if (item.state){
+                            container.addClass("hascolumns");
+                            state = createDiv("labelstate");
+                            state.innerHTML = item.state;
+                        }
+                        if (UI.getDisplayOptions().showTags){
+                            if (item.tags){
+                                tags = createDiv("labeltags");
+                                tags.innerHTML = item.tags;
+                            }
+                        }else{
+                            if (item.category){
+                                category = createDiv("labelcategory");
+                                category.innerHTML = item.category;
+                            }
+                        }
+
+                    }
+
+                    label.innerHTML = getTitle(item);
 
                     elm.appendChild(label);
+
+                    if (state) elm.appendChild(state);
+                    if (tags) elm.appendChild(tags);
+                    if (category) elm.appendChild(category);
+
+
 
                     $(elm).data("profile",profile);
                     $(elm).data("id",item.id);
@@ -143,7 +224,7 @@ var DataStore = (function () {
                 var submenu = $(sender).next();
                 if (submenu.hasClass("profilecategories")) {
                     // categories already loaded
-                    submenu.show();
+                    submenu.toggle();
                 }else {
                     Api.get("data/" + profile + "/structure" ,function(data){
                         if (data && data!= "generic" && data.categories){
@@ -151,7 +232,7 @@ var DataStore = (function () {
                             submenu = createDiv("profilecategories");
 
                             for (var i = 0, len = categories.length; i<len; i++){
-                                var elm = createDiv("category fa");
+                                var elm = createDiv("category faw");
                                 elm.innerHTML = categories[i];
                                 submenu.appendChild(elm);
                             }
@@ -183,7 +264,7 @@ var DataStore = (function () {
             return;
         }
 
-        var container = UI.getNavigationPane(NAVIGATIONPANE.FILES);
+        var container = UI.getNavigationPane(NAVIGATIONPANE.FILES) || $("#cms_editor");
         container.empty();
         UI.setScope(UISCOPE.PROFILEEDITOR);
 
@@ -197,6 +278,7 @@ var DataStore = (function () {
 
             if (data && data!= "generic" && data.fields){
                 var fields = data.fields;
+
                 renderProfileForm(profile,id,fields,data)
 
             }else{
@@ -206,80 +288,9 @@ var DataStore = (function () {
         })
     };
 
-    function renderProfileForm(profile,id,fields,ext){
+    function renderProfileForm(profile,id,fields,profileStructure){
         Api.get("data/" + profile + "/" + id,function(data){
-            if (id==0){
-                if (data && data.multiLanguage){
-                    // add Empty Default Language
-                    // TODO: active language should be added
-                    data[Config.defaultLanguage] = {id: 0};
-                }else{
-                    data={id: 0}
-                }
-            }
-
-            console.log(data);
-            if (data){
-                var formContainer = editorContainer.find(".formcontent");
-                FormBuilder.setContainerElm(formContainer);
-                FormBuilder.setCommonEditors(ext);
-
-                var processedItems = {};
-
-                if (ext.editor){
-                    console.log("get editor " + ext.editor);
-                    Template.get(ext.editor,function(template){
-                        FormBuilder.addEditorFromTemplate(template,data);
-
-                        // execute init function if any
-                        var initelm= el("initfunction");
-                        if (initelm) window[initelm.value]();
-                    });
-
-                }else{
-                    for (var i = 0, len = fields.length; i< len; i++){
-                        var field  = fields[i];
-                        var key = field.name;
-
-                        var editor = FormBuilder.getEditorTypeForField(field);
-
-                        if (data.multiLanguage){
-                            FormBuilder.addEditor(editor,key,data,field,true);
-                        }else{
-                            var value = data[key];
-                            if (typeof value == "undefined") value = "";
-                            FormBuilder.addEditor(editor,key,value,field);
-                        }
-
-                        processedItems[key] = true;
-                    }
-
-                    if (data.multiLanguage){
-                        var activeLanguages = [];
-
-
-
-                        Config.languages.forEach(function(lan){
-                            if (data[lan]) activeLanguages.push(lan);
-                        });
-
-                        FormBuilder.setLanguageList(activeLanguages);
-                        FormBuilder.addEditorElement(formContainer[0],FORMEDITOR.HIDDEN,"activelanguages",activeLanguages.join((",")));
-                    }
-
-                    // add values not present in template if needed
-                    console.error(ext.includeAll);
-                    if (ext.includeAll){
-                        for (var key in data){
-                            if (data.hasOwnProperty(key) && !processedItems[key]){
-                                FormBuilder.addEditor(FORMEDITOR.TEXT,key,data[key]);
-                            }
-                        }
-                    }
-                }
-
-                FormBuilder.wrap();
-            }
+            renderProfileFormData(profile,id,fields,profileStructure,data)
         })
     }
 
@@ -298,7 +309,134 @@ var DataStore = (function () {
         })
     }
 
+    function renderProfileFormData(profile,id,fields,profileStructure,data){
+
+        currentProfileData={
+            profile: profile,
+            id: id,
+            fields: fields,
+            profileStructure: profileStructure,
+            data: data
+        };
+
+        if (id==0){
+            if (data && data.multiLanguage){
+                // add Empty Default Language
+                // TODO: active language should be added
+                data[Config.defaultLanguage] = {id: 0};
+            }else{
+                data={id: 0}
+            }
+        }
+
+        console.log(data);
+        if (data){
+            var formContainer = editorContainer.find(".formcontent");
+            FormBuilder.setContainerElm(formContainer);
+            FormBuilder.setCommonEditors(profileStructure);
+
+            var processedItems = {};
+
+            if (profileStructure.editor){
+                console.log("get editor " + profileStructure.editor);
+                Template.get(profileStructure.editor,function(template){
+                    FormBuilder.addEditorFromTemplate(template,data);
+
+                    // execute init function if any
+                    var initelm= el("initfunction");
+                    if (initelm) window[initelm.value]();
+                });
+
+            }else{
+
+
+                for (var i = 0, len = fields.length; i< len; i++){
+                    var field  = fields[i];
+                    var key = field.name;
+
+                    var editor = FormBuilder.getEditorTypeForField(field);
+
+                    if (data.multiLanguage){
+                        FormBuilder.addEditor(editor,key,data,field,true);
+                    }else{
+                        var value = data[key];
+                        if (typeof value == "undefined") value = "";
+                        FormBuilder.addEditor(editor,key,value,field);
+                    }
+
+                    processedItems[key] = true;
+                }
+
+                var category = self.getProfileValue(data,"category");
+                if (category && profileStructure.categoryFields && profileStructure.categoryFields[category]){
+                    self.renderProfileFormCategoryFields(category);
+                }
+
+                if (data.multiLanguage){
+                    var activeLanguages = [];
+
+
+
+                    Config.languages.forEach(function(lan){
+                        if (data[lan]) activeLanguages.push(lan);
+                    });
+
+                    FormBuilder.setLanguageList(activeLanguages);
+                    FormBuilder.addEditorElement(formContainer[0],FORMEDITOR.HIDDEN,"activelanguages",activeLanguages.join((",")));
+                }
+
+                // add values not present in template if needed
+                console.error(profileStructure.includeAll);
+                if (profileStructure.includeAll){
+                    for (var key in data){
+                        if (data.hasOwnProperty(key) && !processedItems[key]){
+                            FormBuilder.addEditor(FORMEDITOR.TEXT,key,data[key]);
+                        }
+                    }
+                }
+            }
+
+
+
+
+            FormBuilder.wrap();
+        }
+    }
+
+    self.renderProfileFormCategoryFields = function(category){
+
+        if (!currentProfileData) return;
+        var profileStructure = currentProfileData.profileStructure;
+        var data = currentProfileData.data;
+        FormBuilder.removeExtendedEditors();
+
+        if (category && profileStructure.categoryFields && profileStructure.categoryFields[category]){
+            var fields = profileStructure.categoryFields[category];
+
+            for (var i = 0, len = fields.length; i< len; i++){
+                var field  = fields[i];
+                var key = field.name;
+
+                var editor = FormBuilder.getEditorTypeForField(field);
+
+                if (data.multiLanguage){
+                    FormBuilder.addEditor(editor,key,data,field,true);
+                }else{
+                    var value = data[key];
+                    if (typeof value == "undefined") value = "";
+                    FormBuilder.addEditor(editor,key,value,field);
+                }
+
+            }
+
+        }
+
+    };
+
     self.cancelEditProfile = function(){
+        if (typeof CMS != "undefined" && CMS.isFrontend){
+            CMS.closeEditor();
+        }
         self.listProfile(currentProfile);
     };
 
@@ -321,62 +459,86 @@ var DataStore = (function () {
 
     };
 
-    self.editList = function(id,category){
+    self.duplicateProfile = function(){
+        currentProfileId = 0;
+        if (currentProfileData) currentProfileData.id = 0;
+        var copyOfName = function(index,value){
+            return "Copy of " + value;
+        };
+
+        Config.languages.forEach(function(lan){
+            editorContainer.find("input[name='"+lan+":name']").val(copyOfName);
+        });
+        editorContainer.find("input[name='name']").val(copyOfName);
+
+    };
+
+    self.getProfileValue = function(profileData,key,language){
+        if (profileData.multiLanguage){
+            var lan = language || Config.defaultLanguage;
+            var lanData =  profileData[lan];
+            if (lanData){
+                return lanData[key];
+            }
+
+        }else{
+            return profileData[key];
+        }
+    };
+
+    self.editList = function(id,category,language){
+
+        if (typeof id == "undefined") id = currentSectionItemId;
+        if (typeof category == "undefined") category = currentSectionCategory;
+
         currentSectionItemId = id;
-        Api.get("data/lists/" + id,function(list){
+        currentSectionCategory = category;
+
+        var newList = false;
+
+        var url = "data/lists/" + id;
+        Api.get(url,function(list){
             var container = UI.getNavigationPane(NAVIGATIONPANE.FILES);
             container.empty();
             UI.setScope(UISCOPE.LISTEDITOR);
 
+            var hasMultipleLanguages = list.multiLanguage;
+            if (hasMultipleLanguages){
+                language = language || Config.defaultLanguage;
+                var activeLanguages = [];
+                Config.languages.forEach(function(lan){
+                   if (list[lan]) activeLanguages.push(lan);
+                });
+                if (activeLanguages.indexOf(language) < 0)  activeLanguages.push(language);
+                FormBuilder.setLanguageList(activeLanguages,"list");
+            }
+
             if (id == 0){
-                // TODO: where do we define default menu and form structure?
-                list = {};
-                list.items = [{}];
-                list.name = "new_" + category;
+                list = createEmptyList(category);
+                newList = true;
 
-                list.fields =  [
-                    {
-                        name: "name",
-                        type: "text"
-                    },
-                    {
-                        name: "label",
-                        type: "text"
-                    },
-                    {
-                        name: "type",
-                        type: "enum",
-                        values: "text,textarea,date,email,title"
-                    },
-                    {
-                        name: "mandatory",
-                        type: "checkbox"
-                    }
-                ];
-
-                if (category == "menu"){
-                    list.fields= [
-                        {
-                            name: "name",
-                            type: "text"
-                        },
-                        {
-                            name: "url",
-                            type: "text"
-                        },
-                        {
-                            name: "target",
-                            type: "enum",
-                            values: ",_self,_blank"
-                        }
-                    ]
-                }
+                //TODO:  should new lists be multilanguiage by default?
+                language = language || Config.defaultLanguage;
             }else{
-                category = list.category;
+                category = list.category || category;
+
+                if (hasMultipleLanguages){
+                    // keep same name accross languages
+                    var listName;
+                    if (list[Config.defaultLanguage] && list[Config.defaultLanguage].name) listName=list[Config.defaultLanguage].name;
+
+                    list = list[language];
+                    if (!list){
+                        list = createEmptyList(category);
+                        newList = true;
+                    }
+                    if (listName) list.name = listName;
+                }
             }
 
             var items = list.items;
             var fields = list.fields;
+
             list.properties = list.properties || {};
 
             var caption = createInput("itemcaption",null,"listname" + id,list.name);
@@ -385,6 +547,13 @@ var DataStore = (function () {
 
             if (category == "form"){
                 properties = Mustache.to_html(Templates["formEditorProperties"],list.properties);
+            }
+
+            if (language){
+                var languageCaption = createDiv("languagecaption languageeditor flag_" + language);
+                languageCaption.innerHTML = Config.languageNames[language];
+                var languageInput = createHidden("listlanguage" + id,"listlanguage" + id,language);
+                languageCaption.appendChild(languageInput);
             }
 
             var header = createSortableListFormHeader(fields);
@@ -399,11 +568,12 @@ var DataStore = (function () {
             }
 
             container.append(caption);
+            if (languageCaption) container.append(languageCaption);
             if (properties) container.append(properties);
             container.append(header);
             container.append(sortableList);
 
-            if (id == 0){
+            if (newList){
                 // populate initial fields for insert
                 container.append(createHidden("","initialcategory",category));
                 container.append(createHidden("","initialfields",JSON.stringify(list.fields)));
@@ -428,6 +598,58 @@ var DataStore = (function () {
             });
 
         })
+    };
+
+
+    var createEmptyList = function(category){
+        // TODO: where do we define default menu and form structure?
+        var list = {};
+        list.items = [{}];
+        list.name = "new_" + category;
+        list.category = category;
+
+        list.fields =  [
+            {
+                name: "name",
+                type: "text"
+            },
+            {
+                name: "label",
+                type: "text"
+            },
+            {
+                name: "type",
+                type: "enum",
+                values: "text,textarea,date,email,title"
+            },
+            {
+                name: "mandatory",
+                type: "checkbox"
+            }
+        ];
+
+        if (category == "menu"){
+            list.fields= [
+                {
+                    name: "name",
+                    type: "text"
+                },
+                {
+                    name: "url",
+                    type: "text"
+                },
+                {
+                    name: "target",
+                    type: "enum",
+                    values: ",_self,_blank"
+                },
+                {
+                    name: "image",
+                    type: "image"
+                }
+            ]
+        }
+        return list;
     };
 
     var createSortableListFormHeader = function(fields){
@@ -455,8 +677,14 @@ var DataStore = (function () {
     };
 
     var createSortableListFormRow = function(data,fields){
-        var elm = createDiv("inlineformrow");
+        var elm = createDiv("inlineformrow nowrap");
         var form = createDiv("inlineform","inlineform" + data.id);
+
+        if (data.index){
+            var indent = data.index.split(".").length-1;
+            elm.className += " indent" + indent;
+            $(elm).data("indent",indent);
+        }
 
         form.appendChild(createDiv("fa handle"));
         form.appendChild(createDiv("fa fa-angle-double-left indentleft onhover"));
@@ -473,7 +701,6 @@ var DataStore = (function () {
 
     self.addListItem = function(){
         var listElm = $("#list" +  currentSectionItemId);
-        console.error(listElm);
         var fields =  listElm.data("fields");
         var item = {
             id: 0
@@ -494,6 +721,8 @@ var DataStore = (function () {
         var properties = {};
 
         var name = $("#listname" +  currentSectionItemId).val();
+        var language;
+        if (el("listlanguage"+currentSectionItemId)) language = $("#listlanguage" +  currentSectionItemId).val();
 
         $(".propertyvalue").each(function(){
             if (this.name) properties[this.name] = $(this).val();
@@ -530,9 +759,10 @@ var DataStore = (function () {
 
         var data = "name=" + name + "&json_items=" + JSON.stringify(dataObj) + "&json_properties=" + JSON.stringify(properties);
 
-        if (currentSectionItemId == 0){
+        if (el("initialcategory") && el("initialfields")){
             data = "tree=true&category=" + $("#initialcategory").val() + "&json_fields=" + $("#initialfields").val() + "&" + data;
         }
+        if (language) data += "&activeLanguage=" + language;
 
         console.log(data);
         Api.post("data/lists/" + currentSectionItemId + "/update",data,function(resultdata){

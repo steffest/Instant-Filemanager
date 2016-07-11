@@ -1,0 +1,595 @@
+@import "var";
+
+.directory .content{
+  padding-left: 20px;
+}
+
+.filedirectory,
+.directoryup{
+  background-color: #f2f2f5;
+}
+
+.directoryup{
+  padding-left: 4px;
+}
+
+.listitem .label.faw{
+  display: inline-block;
+}
+
+.hascolumns .listitem{
+  white-space: nowrap;
+}
+
+.hascolumns .listitem .label.faw,
+.listitem .labelname{
+  display: inline-block;
+  width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.listitem .labelstate,
+.listitem .labelurl,
+.listitem .labeltags,
+.listitem .labelcategory{
+  display: inline-block;
+  width: 200px;
+  color: @commentColor;
+  padding-left: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+}
+
+.listitem .labelstate{
+  width: 100px;
+}
+
+
+.filedirectory .label.faw:before{
+  font-family: FontAwesome;
+  content: "\f114";
+  margin: 0 4px;
+  color: @textIconColor;
+}
+
+.file .label.faw:before,
+.record .label.faw:before{
+  font-family: FontAwesome;
+  content: "\f016";
+  margin: 0 4px;
+  color: @textIconColor;
+}
+
+.listitem:hover,
+.directoryup:hover{
+  background-color: @itemHover;
+  cursor: pointer;
+
+}
+
+.listitem.selected,
+.listitem.selected:hover{
+  background-color: @selected;
+}
+
+.belowcaption{
+  padding-top: 28px;
+  position: relative;
+}
+
+.belowcaption.max{
+  height: 100%;
+  width: 100%;
+}
+
+.filelist.displayicons .listitem{
+  float: left;
+  width: 120px;
+  height: auto;
+  margin: 1px;
+  border: 1px solid white;
+}
+
+.filelist.displaythumbs .listitem{
+  float: left;
+  width: 250px;
+  height: auto;
+  margin: 4px;
+  border: 1px solid white;
+}
+
+.filelist.displayicons .listitem:hover,
+.filelist.displaythumbs .listitem:hover{
+  border: 1px solid @itemHover;
+}
+
+.filelist.displayicons .listitem .label,
+.filelist.displaythumbs .listitem .label{
+  text-align: center;
+  font-size: 11px;
+  height: 25px;
+  overflow: hidden;
+  color: #544F4F;
+}
+
+.filelist.displaylist.displaytags .listitem .label{
+  width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filelist.displayicons .listitem .fileicon{
+  width: 100%;
+  height: 100px;
+}
+
+.filelist.displaythumbs .listitem .fileicon{
+  width: 100%;
+  height: 200px;
+}
+
+.listitem .fileicon div{
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.listitem .fileicon div.fa{
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  padding-top: 30px;
+  font-size: 50px;
+  color: #a8a8a8;
+}
+
+.filelist.displaythumbs .listitem .fileicon div.fa{
+  padding-top: 40px;
+  font-size: 80px;
+}
+
+
+.listitem .tags{
+  height: 50px;
+  text-align: center;
+  font-size: 12px;
+  color: #a6a6a6;
+}
+
+.filelist.displaylist .listitem .tags{
+  display: inline-block;
+  width: 200px;
+  height: auto;
+  text-align: left;
+}
+
+
+
+#dragClone.dragging{
+  border: 1px solid grey;
+  background-color: white;
+  padding: 8px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.4);
+  font-size: 12px;
+  z-index: 100000;
+}
+
+.listitem.dragover,
+.directory.dragover{
+  border: 1px dotted red !important;
+}
+
+
+#commonpublishdate .datepicker{
+  float: left;
+  border: none;
+  border-bottom: 1px solid #c1d1cf;
+  padding: 4px;
+  width: 65%;
+}
+
+.profilelist .profilecategories,
+.directorycontainer .sectionsubmenu{
+  padding-left: 16px;
+  font-size: 0.9em;
+}
+
+.directorycontainer .profile.faw,
+.directorycontainer .category.faw,
+.directorycontainer .section.faw,
+.directorycontainer .menu.faw,
+.directorycontainer .form.faw,
+.sectionlist .command.faw{
+  display: block;
+  text-overflow: ellipsis;
+  padding: 10px 8px;
+  color: #222f44;
+  border-bottom: 1px solid @itemBorder;
+  text-transform: capitalize;
+
+  &:before{
+    font-family: FontAwesome;
+  }
+
+  &:hover{
+    color: #0f101e;
+    cursor: pointer;
+    border-bottom: 1px solid @itemBorder;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+
+
+.directorycontainer .profile.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f0b1";
+  font-size: 12px;
+}
+
+.directorycontainer .profile.profileusers.faw:before{
+  content: "\f007";
+}
+
+.directorycontainer .profile.profilepages.faw:before{
+  content: "\f0f6";
+}
+
+.directorycontainer .category.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f02b";
+  font-size: 12px;
+}
+
+.directorycontainer .section.sectionmenu.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f022";
+  font-size: 12px;
+}
+
+.directorycontainer .section.sectionfilemanager.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f07b";
+  font-size: 12px;
+}
+
+.directorycontainer .section.sectionform.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f075";
+  font-size: 12px;
+}
+
+.directorycontainer .section.sectionadmin.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f085";
+  font-size: 12px;
+}
+
+.directorycontainer .menu.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f03a";
+}
+
+.directorycontainer .form.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f133";
+}
+
+.directorycontainer .tags.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f02c";
+}
+
+
+
+
+input.itemcaption{
+  padding: 4px;
+  background-color: #f2f2f5;
+  width: 100%;
+  border: none;
+  border-bottom: dotted 1px @captionBright;
+
+}
+
+
+
+
+.inlineDialog{
+  font-size: 13px;
+  text-align: center;
+  padding: 4px;
+  background-color: white;
+}
+
+.filemanager.nofiledetail .collapsedactions .inlineDialog{
+  min-width: 200px;
+}
+
+.inlineDialog.warning{
+  border: 2px dashed @negative;
+}
+
+.inlineDialog.warning .button.neutral{
+  background-color: @positive;
+}
+
+.inlineDialog.warning .button.neutral:hover{
+  background-color: darken(@positive,10%);
+}
+
+.inlineDialog.warning .button.positive{
+  background-color: @negative;
+}
+
+.inlineDialog.warning .button.positive:hover{
+  background-color: darken(@negative,10%);
+}
+
+.inlineDialog .inputBox{
+  width: 100%;
+  padding: 4px;
+  border: none;
+  border-bottom: dotted 1px @itemBorderBright;
+  background-color: #f2f2f5;
+}
+
+.inlineDialog .buttons{
+  padding-top: 8px;
+}
+
+
+#progress{
+  height: 4px;
+}
+
+#progress .bar{
+  height: 4px;
+  background-color: @progress;
+
+}
+
+.texteditor textarea{
+  width: 100%;
+  height: 400px;
+}
+
+.inlineformheader{
+  border-bottom: 1px solid #e9e9e9;
+  padding: 4px 4px 4px 0;
+  text-transform: capitalize;
+  font-size: 13px;
+}
+
+.inlineformheader div{
+  display: inline-block;
+  color: @actionLink;
+  margin: 2px;
+}
+
+.inlineformheader .buttons{
+  width: 51px;
+}
+
+
+.inlineformrow{
+  padding: 4px;
+  border-bottom: 1px solid #e9e9e9;
+}
+
+.sortablelist .sortable-placeholder{
+  height: 40px;
+  border: 1px dashed @primary_light;
+  margin: 2px;
+}
+
+.inlineformrow .handle{
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  color: #cbcbce;
+}
+
+.inlineformrow .handle:before{
+  content: "\f142";
+}
+
+.inlineformrow .indentleft,
+.inlineformrow .indentright{
+  display: inline-block;
+  width: 14px;
+  height: 20px;
+  color: #cbcbce;
+}
+
+.inlineformrow .indentleft:hover,
+.inlineformrow .indentright:hover,
+.inlineformrow:hover .handle:hover{
+  color: black;
+}
+
+.inlineformrow .action_removelistitem{
+  color: @negative;
+  float: right;
+  width: 20px;
+  height: 20px;
+  margin-top: 8px;
+}
+
+.inlineformrow .action_removelistitem:hover{
+  color: darken(@negative,10%);
+}
+
+.inlineformrow .onhover{
+  opacity: 0;
+  cursor: pointer;
+}
+
+.inlineformrow:hover .onhover{
+  opacity: 1;
+}
+
+.inlineformrow:hover .handle{
+  color: #858588;
+  cursor: move;
+}
+
+.inlineformrow:hover .handle:before{
+  content: "\f07d";
+}
+
+.inlineformrow input,
+.inlineformrow select,
+.inlineformrow div.inline{
+  display: inline-block;
+  border:none;
+  border-bottom: dotted 1px @itemBorderBright;
+  background-color: #f2f2f5;
+  padding: 6px;
+}
+
+.inlineformrow .col,
+.inlineformheader .col{
+  width: 180px;
+  margin: 2px;
+}
+
+.inlineformrow .colsmall,
+.inlineformheader .colsmall{
+  width: 100px;
+  margin: 2px;
+}
+
+.inlineformrow .box{
+  text-align: center;
+  width: 75px;
+}
+
+.inlineformrow.indent1 .inlineform .first{
+  width: 160px;
+  margin-left: 22px;
+}
+
+.inlineformrow.indent2 .inlineform .first{
+  width: 140px;
+  margin-left: 42px;
+}
+
+.inlineformrow.indent3 .inlineform .first{
+  width: 120px;
+  margin-left: 62px;
+}
+
+
+
+.mainpanel{
+  height: 100%;
+}
+
+.imageviewer.mainpanelmodule{
+  height: 100%;
+  background-color: #2c2c2c;
+}
+
+.imageviewer .mainimage{
+  width: 100%;
+  height: 100%;
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+
+
+.blanket{
+  background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2000;
+}
+
+.popup{
+  position: fixed;
+  left: 25%;
+  right: 25%;
+  background-color: white;
+  border: 1px solid grey;
+  z-index: 2001;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+
+.popup td,
+.popup th{
+  padding: 2px;
+  font-size: 12px;
+  border-bottom: 1px solid #c1d1cf;
+}
+
+
+.popup th{
+  background-color: #f2f2f5;
+}
+
+
+
+.propertypanel{
+  background-color: #fcfcff;
+  border: 1px solid #f2f2f5;
+  padding: 4px;
+}
+
+.propertypanel h3{
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.propertypanel .label{
+  float: left;
+  display: inline-block;
+  width: 100px;
+  font-size: 12px;
+}
+
+.propertypanel .property{
+  float: left;
+  display: inline-block;
+  font-size: 12px;
+}
+
+.propertypanel .item{
+  padding: 2px;
+  border-top: 1px solid  #f3f3f8;
+}
+
+.propertypanel .property select,
+.propertypanel .property input{
+  border: 1px solid @itemBorder;
+  width: 200px;
+  padding: 4px;
+}
+
+
+
+
+
+
+

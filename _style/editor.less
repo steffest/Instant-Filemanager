@@ -1,0 +1,209 @@
+@import "var";
+
+.editor{
+    padding-bottom: 4px;
+
+    .itemcaption{
+        padding: 4px;
+        background-color: #f2f2f5;
+        text-transform: capitalize;
+        font-size: 0.9em;
+
+        small{
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+
+        i.fa{
+            color: rgba(0,0,0,0.3);
+            font-size: 0.8em;
+            margin-right: 2px;
+            width: 10px;
+        }
+
+        &:hover{
+            cursor: pointer;
+
+            i.fa{
+                color: black;
+            }
+        }
+    }
+
+    .inputBox {
+        padding: 4px;
+        border: 1px solid silver;
+        width: 100%;
+    }
+
+    textarea{
+        padding: 4px;
+        border: 1px solid silver;
+        width: 100%;
+        height: 200px;
+    }
+
+    select{
+        padding: 4px;
+        border: 1px solid silver;
+        width: 100%;
+        background-color: white;
+    }
+
+    .fileupload{
+        .attachmentfile{
+            padding: 6px 10px;
+            font-size: 12px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 4px;
+            position: relative;
+
+            .delete{
+                display: none;
+                width: 20px;
+                height: 20px;
+                position: absolute;
+                right: 10px;
+                font-size: 14px;
+
+                &:hover{
+                    color: red;
+                    cursor: pointer;
+                }
+            }
+
+            a{
+                text-decoration: none;
+                color: grey;
+
+                &:hover{
+                    color: @primary_bright;
+                    text-decoration: underline;
+                }
+            }
+
+            &:hover{
+                .delete{
+                    display: block;
+                }
+            }
+        }
+    }
+}
+
+.languageeditor,
+.languageeditor_all{
+    padding: 4px 0 4px 58px;
+    position: relative;
+
+    &::before{
+        content: '';
+        position: absolute;
+        width: 50px;
+        height: 20px;
+        top: 6px;
+        left: 0;
+        color: #a2a2a2;
+        font-size: 11px;
+        background-image: url("@{imgpath}flags.png?v2");
+        background-repeat: no-repeat;
+        padding-left: 22px;
+    }
+}
+
+.languagecaption.languageeditor{
+    padding: 4px 0 4px 24px;
+    margin: 10px 0;
+    border-bottom: 1px solid @itemBorder;
+}
+
+.languageselect{
+    margin: 0 0 0 20px;
+    padding: 4px 0 4px 20px;
+    font-size: 12px;
+    color: #8d9b99;
+    border-bottom: 1px solid #f2f2f5;
+
+    &.inactive{
+        color: #b7c5c3;
+
+        &::before{
+            opacity: 0.3;
+        }
+    }
+
+    &:hover{
+        background-color: @backgroundLight;
+        border-bottom: 1px solid @itemBorderBright;
+        cursor: pointer;
+    }
+
+    &::before{
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        margin-left: -20px;
+        background-image: url("@{imgpath}flags.png");
+        background-repeat: no-repeat;
+        margin-right: 4px;
+    }
+}
+
+.language_en::before{content: "EN";}
+.language_nl::before{content: "NL";}
+.language_benl::before{content: "BENL";}
+.language_befr::before{content: "BEFR";}
+.language_fr::before{content: "FR";}
+.language_de::before{content: "DE";}
+.language_it::before{content: "IT";}
+.language_es::before{content: "ES";}
+.language_se::before{content: "SE";}
+.language_no::before{content: "NO";}
+.language_gr::before{content: "GR";}
+
+.flag_en::before{background-position: 0 -41px; }
+.flag_nl::before{background-position: 0 -20px; }
+.flag_befr::before{background-position: 0 -209px; }
+.flag_benl::before{background-position: 0 -188px; }
+.flag_fr::before{background-position: 0 -62px; }
+.flag_it::before{background-position: 0 -83px; }
+.flag_es::before{background-position: 0 -146px; }
+.flag_de::before{background-position: 0 -125px; }
+.flag_se::before{background-position: 0 -104px; }
+.flag_no::before{background-position: 0 -167px; }
+.flag_gr::before{background-position: 0 -255px; }
+.flag_all::before{background-position: 23px -229px; }
+
+.settingstable{
+    th{
+        background-color: @primary_bright;
+        color: white;
+        font-size: 12px;
+        text-align: center;
+        font-weight: normal;
+    }
+
+    input{
+        width: 100%;
+        border: 1px solid silver;
+        text-align: center;
+    }
+
+    td.info{
+        background-color :#f2f2f5;
+        color: gray;
+        font-size: 11px;
+        text-align: center;
+    }
+}
+
+
+#codecontent{
+    margin: 0;
+    position: absolute;
+    top: 28px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}

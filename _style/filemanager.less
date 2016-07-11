@@ -1,0 +1,319 @@
+@import "var";
+
+.filemanager{
+    &.cover{
+
+        .panes{
+            -moz-filter: blur(3px);
+            -o-filter: blur(3px);
+            -ms-filter: blur(3px);
+            filter: blur(3px);
+            -webkit-filter: blur(3px);
+        }
+
+        .blanket{
+            display: block;
+        }
+    }
+}
+
+
+    .filemanager .panes{
+        height: 100%;
+        width: 100%;
+    }
+
+
+
+    .filemanager .actions{
+        margin-right: 20px;
+    }
+
+    .filemanager.nofiledetail .filedetail .hideoncollapse{
+        display: none;
+    }
+
+    .filemanager .actions .collapsedactions{
+        display: none;
+    }
+
+    .filemanager.nofiledetail .actions .collapsedactions{
+        display: block;
+    }
+
+
+    .filemanager .actions i.fa{
+        width: 16px;
+    }
+
+    .filemanager .actions .caption{
+        background-color: #FFF;
+        border: none;
+        border-bottom: 1px solid @itemBorder;
+        padding: 4px;
+        font-size: 13px;
+        color: @actionTitle;
+    }
+
+    .filemanager .recordactions{
+        margin-bottom: 16px;
+    }
+
+    .filemanager .action{
+        color: @actionLink;
+        font-size: 13px;
+        padding: 4px 0 4px 12px;
+    }
+
+    .filemanager .action.positive{
+        color: @actionLinkPositive;
+    }
+
+    .filemanager .action.negative{
+        color: @actionLinkNegative;
+    }
+
+    .filemanager .action.action_addlanguage{
+        font-size: 12px;
+        padding: 6px 0 6px 20px;
+    }
+
+    .fa-check-square-o.fa-spin:before {
+        content: "\f110";
+        -webkit-transform-origin: 6px 6px;
+        transform-origin: 6px 6px;
+    }
+
+    .filemanager .action:hover{
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .filemanager .directorycontainer{
+        height: 100%;
+        width: 200px;
+        position: fixed;
+        margin-left: 0;
+        background-color: @backgroundLight;
+        padding-top: 25px;
+        z-index: 99;
+    }
+
+    .filemanager.nosidebar .directorycontainer{
+        margin-left: -200px;
+    }
+
+    .frontend .filemanager .directorycontainer{
+        display: none;
+    }
+
+    .filemanager .panes.mainpanelfocus .directorycontainer{
+        display: none;
+    }
+
+    .filemanager .directorycontainer .caption{
+        position: absolute;
+        width: 200px;
+        margin-top: -25px;
+        padding-left: 8px;
+    }
+
+    .filemanager .directorycontainer .caption .action_togglesidebar{
+        position: absolute;
+        right: 0;
+        width: 20px;
+        height: 25px;
+        padding-top: 7px
+    }
+
+    .filemanager.nosidebar .directorycontainer .caption .action_togglesidebar{
+        right: -24px;
+    }
+
+
+    .filemanager .foldercontainer{
+        padding: 4px 0;
+        height: 100%;
+        font-size: 13px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+    }
+
+    .filemanager .directorylist,
+    .filemanager .profilelist,
+    .filemanager .sectionlist{
+        padding: 0 4px;
+    }
+
+    .filemanager .directory .label.faw{
+        display: block;
+        text-overflow: ellipsis;
+        padding: 4px;
+        color: #222f44;
+        border-bottom: 1px solid transparent;
+    }
+
+    .filemanager .directory .label:hover{
+        color: #0f101e;
+        cursor: pointer;
+        border-bottom: 1px solid @itemBorder;
+    }
+
+
+    .filemanager .directory .label.faw:before{
+        font-family: FontAwesome;
+        margin-right: 6px;
+        content: "\f114";
+    }
+
+    .filemanager .directory .label.faw.open:before,
+    .filemanager .directory .label.faw:hover:before{
+        margin-right: 4px;
+        content: "\f115";
+    }
+
+    .filemanager .filecontainer{
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        padding-left: 400px;
+    }
+
+    .filemanager.nosidebar .filecontainer,
+    .frontend .filemanager .filecontainer{
+        padding-left: 200px;
+    }
+
+    .filemanager.nofiledetail .filecontainer{
+        padding-left: 245px;
+    }
+
+    .filemanager.nosidebar.nofiledetail .filecontainer,
+    .frontend .filemanager.nofiledetail .filecontainer{
+        padding-left: 45px;
+    }
+
+    .filecontainer .caption{
+        position: fixed;
+        left: 400px;
+        right: 0;
+        z-index: 100;
+    }
+
+    .filemanager.nofiledetail .filecontainer .caption{
+        left: 240px;
+    }
+
+    .filemanager.nosidebar .filecontainer .caption{
+        left: 200px;
+    }
+
+    .frontend .filemanager .filecontainer .caption{
+        left: 250px;
+        right: 50px;
+    }
+
+    .filemanager.nosidebar.nofiledetail .filecontainer .caption{
+        left: 40px;
+    }
+
+    .frontend .filemanager.nofiledetail .filecontainer .caption {
+        left: 90px;
+    }
+
+    .filemanager .panes.mainpanelfocus .filecontainer{
+        padding-left: 0;
+    }
+
+    .filemanager .panes.mainpanelfocus .filecontainer .caption{
+        left: 0;
+    }
+
+    .filemanager .filedetail{
+        height: 100%;
+        width: 200px;
+        margin-left: 200px;
+        position: fixed;
+    }
+
+    .frontend .filemanager .filedetail{
+        height: auto;
+        bottom: 50px;
+        top: 0;
+    }
+
+    .filemanager.nosidebar .filedetail{
+        margin-left: 0;
+    }
+
+    .frontend .filemanager .filedetail{
+        margin-left: 0;
+    }
+
+
+    .filemanager.nofiledetail .filedetail{
+        width: 40px;
+        background-color: @primary;
+    }
+
+    .filemanager .panes.mainpanelfocus .filedetail{
+        display: none;
+    }
+
+    .filemanager .filedetail .preview.image{
+        width: 100%;
+        height: 100px;
+        background-size: contain;
+        background-position: left top;
+        background-repeat: no-repeat;
+    }
+
+    .filemanager .filedetail .preview video{
+        height: 100px;
+        width: 100%;
+    }
+
+    .filemanager .filedetail .preview audio{
+        width: 100%;
+    }
+
+    .filelist .listitem{
+        font-size: 13px;
+        padding: 4px 2px;
+        margin: 0;
+        border-bottom: 1px dotted @itemBorder;
+    }
+
+    .filedetail .info{
+        font-size: 13px;
+        padding: 4px;
+        line-height: 16px;
+    }
+
+    .filedetail select{
+        border: none;
+        border-bottom: 1px solid @itemBorder;
+        background-color: white;
+        width: 90%;
+        margin-left: 10%;
+        padding: 4px;
+    }
+
+    .filedetail .datelabel{
+        width: 35%;
+        text-align: right;
+        font-size: 12px;
+        padding: 4px;
+        color: #97a5a3;
+        float: left;
+    }
+
+    .listitemsearch .searchinput{
+        width: 100%;
+        padding: 6px;
+        margin: 4px 0;
+        background-color: @backgroundLight;
+        border: 1px solid @itemBorder;
+    }
+
+

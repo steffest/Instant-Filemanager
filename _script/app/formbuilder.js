@@ -6,7 +6,9 @@ var FORMEDITOR = {
     DATE: {id: 5, inlineStyle: "col"},
     CHECKBOX: {id: 6, inlineStyle: "box"},
     FILEUPLOAD: {id: 7, inlineStyle: "col"},
-    HIDDEN: {id: 8, inlineStyle: "col"}
+    HIDDEN: {id: 8, inlineStyle: "col"},
+    IMAGE: {id: 9, inlineStyle: "col"},
+    CUSTOM: {id: 10, inlineStyle: "col"}
 };
 
 var FormBuilder = (function () {
@@ -43,7 +45,7 @@ var FormBuilder = (function () {
             }
         }
 
-        var select = el("commonaccess");
+        select = el("commonaccess");
         $(select).empty();
         if (ext.access){
             for (var i= 0, len = ext.access.length; i<len;i++){
@@ -58,8 +60,10 @@ var FormBuilder = (function () {
     };
 
 
-    self.addEditor = function(type,name,value,ext,hasMultipleLanguages){
+    self.addEditor = function(type,name,value,editorProperties,hasMultipleLanguages){
         var editor = createDiv("editor");
+
+        if (editorProperties && editorProperties.extention) editor.className += " extended";
 
         var handled = false;
         var input;
@@ -84,6 +88,7 @@ var FormBuilder = (function () {
             case "state":
                 input = createHidden(name,name + "_value",mainValue);
                 editor.appendChild(input);
+                editor.className += " hidden";
 
                 $("#commonstate").val(mainValue);
                 $("#commonrecordstate").removeClass("hidden");
@@ -93,6 +98,7 @@ var FormBuilder = (function () {
             case "publishfrom":
                 input = createHidden(name,name + "_value",mainValue);
                 editor.appendChild(input);
+                editor.className += " hidden";
 
                 $("#commonpublishfrom").val(mainValue);
                 $("#commonpublishdate").removeClass("hidden");
@@ -102,6 +108,7 @@ var FormBuilder = (function () {
             case "publishto":
                 input = createHidden(name,name + "_value",mainValue);
                 editor.appendChild(input);
+                editor.className += " hidden";
 
                 $("#commonpublishto").val(mainValue);
                 handled = true;
@@ -110,6 +117,7 @@ var FormBuilder = (function () {
             case "category":
                 input = createHidden(name,name + "_value",mainValue);
                 editor.appendChild(input);
+                editor.className += " hidden";
 
                 $("#commoncategory").val(mainValue);
                 $("#commonrecordcategory").removeClass("hidden");
@@ -118,6 +126,7 @@ var FormBuilder = (function () {
             case "access":
                 input = createHidden(name,name + "_value",mainValue);
                 editor.appendChild(input);
+                editor.className += " hidden";
 
                 $("#commonaccess").val(mainValue);
                 $("#commonrecordaccess").removeClass("hidden");
@@ -126,41 +135,80 @@ var FormBuilder = (function () {
             case "tags":
                 input = createHidden(name,name + "_value",mainValue);
                 editor.appendChild(input);
+                editor.className += " hidden";
 
-                $("#commontags").val(mainValue);
+                var tagInput = $("#commontags");
+
+                tagInput.val(mainValue);
                 $("#commontagsinput").removeClass("hidden");
 
                 var tagListContainer = UI.getNavigationPane(NAVIGATIONPANE.TAGLIST);
                 tagListContainer.addClass("editor").removeClass("hidden");
+
+                // tageeditor
+                var tags = mainValue.split(",");
+                FormBuilder.initTagEditor(tags,
+                    function(me){
+                        var tag = me.innerHTML;
+                        tagInput.val(concatStringAdd(tagInput.val(),tag));
+                    },
+                    function(me){
+                        var tag = me.innerHTML;
+                        tagInput.val(concatStringRemove(tagInput.val(),tag));
+                    });
+
                 handled = true;
                 break;
         }
 
         if (!handled){
-            var label = createDiv("itemcaption");
-            label.innerHTML = name;
-            editor.appendChild(label);
+            editorProperties = editorProperties || {};
+            editorProperties.data = lanValues || value;
+
+
+            if (type == FORMEDITOR.HIDDEN) {
+                editor.className += " hidden";
+            }else{
+                var toggleIcon = createFaIcon("caret-down");
+                var label = createDiv("itemcaption action_toggleformeditor");
+                label.innerHTML =  editorProperties.label || name;
+                $(label).prepend(toggleIcon);
+                if (editorProperties.info) label.innerHTML += " <small>(" + editorProperties.info + ")</small>";
+                editor.appendChild(label);
+            }
+
+            var multiEditors;
 
             if (hasMultipleLanguages){
-                var multiEditors = createDiv("languages");
-                $(multiEditors).data("type",type);
-                $(multiEditors).data("name",name);
-                $(multiEditors).data("ext",ext);
+                if (editorProperties.global){
+                    multiEditors = createDiv("languageeditor_all language_all flag_all");
+                    self.addEditorElement(multiEditors,type,name,mainValue,editorProperties);
+                }else{
+                    multiEditors = createDiv("languages");
+                    $(multiEditors).data("type",type);
+                    $(multiEditors).data("name",name);
+                    $(multiEditors).data("ext",editorProperties);
 
-                Config.languages.forEach(function(lan){
-                    lanValues = value[lan];
-                    if (lanValues){
-                        var lanName = lan + ":" + name;
-                        var lanValue = lanValues[name] || "";
-                        var lanEditor = createDiv("languageeditor language_" + lan  + " flag_" + lan);
-                        self.addEditorElement(lanEditor,type,lanName,lanValue,ext);
-                        multiEditors.appendChild(lanEditor);
-                    }
-                });
+                    Config.languages.forEach(function(lan){
+                        lanValues = value[lan];
+                        if (lanValues){
+                            var lanName = lan + ":" + name;
+                            var lanValue = lanValues[name] || "";
+                            var lanEditor = createDiv("languageeditor language_" + lan  + " flag_" + lan);
+
+                            if (type == FORMEDITOR.HIDDEN){
+                                lanEditor.className = "";
+                            }
+                            self.addEditorElement(lanEditor,type,lanName,lanValue,editorProperties);
+                            multiEditors.appendChild(lanEditor);
+                        }
+                    });
+                }
+
 
                 editor.appendChild( multiEditors);
             }else{
-                self.addEditorElement(editor,type,name,mainValue,ext);
+                self.addEditorElement(editor,type,name,mainValue,editorProperties);
             }
 
         }
@@ -235,19 +283,139 @@ var FormBuilder = (function () {
 
                 break;
             case FORMEDITOR.FILEUPLOAD:
-                console.error("files",value);
-                var uploader = createUpload(name,'',value,"articles");
+
+                var config = {
+                    name: name,
+                    id: '',
+                    value: value,
+                    path: "articles"
+                };
+
+                var uploader = createUpload(config);
                 parent.appendChild(uploader);
 
                 break;
 
             case FORMEDITOR.HIDDEN:
-                console.error("files",value);
                 input = createHidden(name,null,value);
                 parent.appendChild(input);
                 break;
+
+            case FORMEDITOR.IMAGE:
+
+                function showImage(value,forceRefresh){
+
+                    if (value && ext && ext.iconBaseUrl){
+                        var img;
+                        $(parent).find(".imagepreview").remove();
+                        var imgcontainer = createDiv("imagepreview");
+
+                        var imgUrl = ext.iconBaseUrl;
+                        if (forceRefresh) imgUrl += "refresh/";
+                        imgUrl += value;
+
+                        img = document.createElement("img");
+                        img.src = imgUrl;
+                        if (ext.baseUrl){
+                            img.onclick = function(){
+                                window.open(ext.baseUrl + value);
+                            }
+                        }
+                        imgcontainer.appendChild(img);
+                        if (ext.uploadPath){
+                            var actions = createDiv();
+
+                            var url = value;
+                            if (url.indexOf("/")<0 && ext.uploadPath) url =  ext.uploadPath + "/" + url;
+
+                            var editUrl =  "plugin/imageeditor/?f=" +  url;
+                            actions.innerHTML = '<a href="'+editUrl+'" target="_blank" class="action"><i class="fa fa-edit"></i> Edit</a>';
+                            actions.innerHTML += ' <a href="javascript:onImageEditorUpdate()" class="action"><i class="fa fa-refresh"></i> Refresh</a>';
+                            imgcontainer.appendChild(actions);
+
+                            window.onImageEditorUpdate = function(){
+                                showImage(value,true);
+                            }
+                        }
+
+                        parent.appendChild(imgcontainer);
+                    }
+                }
+
+                input = createInput("inputBox",name,null,value);
+                input.onchange = function(){showImage(this.value)};
+                showImage(value);
+                parent.appendChild(input);
+
+                var select = createDiv("textlink action");
+                select.innerHTML = '<i class="fa fa-folder-open-o"></i> Browse';
+                select.onclick = function(){
+                    UI.showDialog({
+                        onSelect: function (name) {
+                            input.value = name;
+                            showImage(name);
+                        }
+                    });
+                };
+                parent.appendChild(select);
+
+                if (ext.uploadPath){
+
+
+                    var uploadUrl = ext.uploadPath || "articles";
+                    if (ext.addCategoryToUploadPath && ext.data && ext.data.category){
+                        uploadUrl += ext.data.category + "/";
+                    }
+
+                    var config = {
+                        path: uploadUrl,
+                        onDone: function(fileData){
+                            if (fileData.filename){
+                                var url =  fileData.filename;
+                                if (!ext.baseUrl && ext.uploadPath) url = uploadUrl + url;
+                                input.value = url;
+                                showImage(url);
+                            }
+                        }
+                    };
+
+                    var uploader = createUpload(config);
+                    parent.appendChild(uploader);
+
+
+                }
+
+
+
+
+                break;
+
+            case FORMEDITOR.CUSTOM:
+                input = createHidden(name,null,value);
+                parent.appendChild(input);
+
+                var templateName = ext.editorTemplate;
+                if (templateName){
+                    Template.get("editor_" + templateName,function(template){
+
+                        var div = createDiv();
+                        div.innerHTML = template;
+                        parent.appendChild(div);
+                        var scripts = div.getElementsByTagName('script');
+                        if (scripts.length){
+                            window.s = scripts;
+                            eval(scripts[0].innerHTML);
+
+                            if (window[templateName + "Init"]){
+                                window[templateName + "Init"](div,input);
+                            }
+                        }
+
+                    });
+                }
+                break;
         }
-    }
+    };
 
     self.addInlineEditor = function(container,type,name,value,ext,index){
 
@@ -323,13 +491,22 @@ var FormBuilder = (function () {
                     box.appendChild(input);
                     container.appendChild(box);
                     break;
+                case FORMEDITOR.IMAGE:
+                    input = createInput("inputBox inlineinput " + className,name,id,value);
+                    container.appendChild(input);
+                    break;
             }
         }
 
 
     };
 
+    self.removeExtendedEditors = function(){
+        formContainer.find(".editor.extended").remove();
+    };
+
     self.renderInlineForm = function(container,data,fields){
+
         for (var i = 0, len = fields.length; i<len; i++){
             var field = fields[i];
             var value = data[field.name];
@@ -388,6 +565,20 @@ var FormBuilder = (function () {
 
         elm = el("access_value");
         if (elm) elm.value = $("#commonaccess").val();
+
+        // update slugs
+        var formContent = $(".formcontent");
+        formContent.find("[name='slug']").val(createSlug(formContent.find("[name='name']").val()));
+
+        var input = document.getElementsByName("activelanguages");
+        if (input && input.length) input = input[0];
+        if (input && input.value){
+            var languages = input.value.split(",");
+            languages.forEach(function(lan){
+                formContent.find("[name='"+lan+":slug']").val(createSlug(formContent.find("[name='"+lan+":name']").val()));
+            })
+        }
+
     };
 
     self.getEditorTypeForField = function(field){
@@ -406,9 +597,15 @@ var FormBuilder = (function () {
                    if (editor == "html"){
                        result = FORMEDITOR.HTML;
                    }
-                   if (editor == "plain"){
+                   if (editor == "plain" || editor == "textarea"){
                        result = FORMEDITOR.TEXTAREA;
                    }
+                   if (editor == "custom"){
+                       result = FORMEDITOR.CUSTOM;
+                   }
+                   break;
+               case "hidden":
+                   result = FORMEDITOR.HIDDEN;
                    break;
                case "date":
                    result = FORMEDITOR.DATE;
@@ -421,6 +618,9 @@ var FormBuilder = (function () {
                    break;
                case "file":
                    result = FORMEDITOR.FILEUPLOAD;
+                   break;
+               case "image":
+                   result = FORMEDITOR.IMAGE;
                    break;
            }
         }
@@ -472,9 +672,21 @@ var FormBuilder = (function () {
         }
     };
 
-    self.setLanguageList = function(activeLanguages){
-        $("#commonrecordlanguage").removeClass("hidden");
-        var container = $("#languagelist");
+    self.setLanguageList = function(activeLanguages,section){
+        var targetId = "#commonrecordlanguage";
+        var containerId = "#languagelist";
+        var addContainerId = "#addlanguagelist";
+
+        if (section == "list") {
+            targetId = "#commonmistlanguage";
+            containerId = "#listlanguagelist";
+            addContainerId = "#addlistlanguagelist";
+        }
+
+        $(targetId).removeClass("hidden");
+        var container = $(containerId);
+        var addContainer = $(addContainerId);
+
         container.empty();
         var lanActive = {};
         activeLanguages.forEach(function(lan){
@@ -484,13 +696,13 @@ var FormBuilder = (function () {
             lanActive[lan] = true;
         });
 
-        container = $("#addlanguagelist");
-        container.empty().addClass('hidden');
+
+        addContainer.empty().addClass('hidden');
         Config.languages.forEach(function(lan){
             if (!lanActive[lan]){
                 var lanSelect = createDiv("languageselect flag_" + lan,"languageselect_" + lan);
                 lanSelect.innerHTML = Config.languageNames[lan];
-                container.append(lanSelect);
+                addContainer.append(lanSelect);
             }
         });
     };
@@ -526,6 +738,19 @@ var FormBuilder = (function () {
         }
 
         $('#languagelist').append($('#languageselect_' + lan));
+
+
+    };
+
+    self.addListLanguage = function(lan){
+        var input = document.getElementsByName("activelanguages");
+        if (input && input.length) input = input[0];
+        if (input){
+            input.value += "," + lan;
+        }
+
+        $('#listlanguagelist').append($('#languageselect_' + lan));
+        DataStore.editList(undefined,undefined,lan);
 
 
     };

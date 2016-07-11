@@ -1,0 +1,58 @@
+@import "var";
+
+.button{
+    display: inline-block;
+    padding: 4px 12px;
+    text-align: center;
+    background-color: @neutralSecondary;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+
+    &.w100{
+        min-width: 100px;
+        text-align: center;
+    }
+}
+
+.button:hover{
+    background-color: #9dadab;
+    cursor: pointer;
+}
+
+.button.positive{
+    background-color: @positive;
+    color: white;
+}
+
+.button.positive:hover{
+    background-color: darken(@positive,10%);
+}
+
+.button.neutral{
+    background-color: @neutral;
+    color: white;
+}
+
+.button.neutral:hover{
+    background-color:  darken(@neutral,10%);
+}
+
+.button.negative{
+    background-color: @negative;
+    color: white;
+}
+
+.button.negative:hover{
+    background-color: darken(@negative,20%);
+}
+
+.button.icon{
+    background-color: transparent;
+    font-size: 20px;
+    border-radius: 0;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.button.icon:hover{
+    color: rgba(255, 255, 255, 1);
+}
