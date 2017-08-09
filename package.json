@@ -1,0 +1,14 @@
+{
+  "name": "SteffestCMSFrontend",
+  "version": "3.0.0",
+  "description": "Steffest CMS Frontend",
+  "main": "index.html",
+  "repository": "https://github.com/",
+  "author": "Steffest",
+  "license": "CookieWare",
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-uglify": "*"
+  }
+}
