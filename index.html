@@ -6,9 +6,19 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.2">
 
     <title></title>
-    <link rel="stylesheet" href="_style/default.css?v0.0.9" type="text/css">
-
+    <link rel="stylesheet" href="_style/default.css?v0.0.20" type="text/css">
     <link rel="stylesheet" href="_style/fontawesome4.6.3/css/font-awesome.css">
+
+    <style>
+        .loader{
+            width: 200px;
+            text-align: center;
+            border: 1px solid silver;
+            color: silver;
+            padding: 50px 0;
+            margin: 100px auto;
+        }
+    </style>
 
     <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>-->
     <script language="javascript" type="text/javascript" src="_script/boilerplate/jquery.1.11.3.min.js"></script>
@@ -29,6 +39,13 @@
     <script language="javascript" type="text/javascript" src="_script/boilerplate/moment.min.js"></script>
     <script language="javascript" type="text/javascript" src="_script/boilerplate/pickaday.js"></script>
 
+
+    <!-- timepicker -->
+    <script language="javascript" type="text/javascript" src='_script/boilerplate/timepicker/jquery.timepicker.min.js'></script>
+    <script language="javascript" type="text/javascript"  src='_script/boilerplate/timepicker/lib/bootstrap-datepicker.js'></script>
+    <link href='_script/boilerplate/timepicker/jquery.timepicker.css' rel='stylesheet' />
+    <link href='_script/boilerplate/timepicker/lib/bootstrap-datepicker.css' rel='stylesheet' />
+
     <!-- html editor -->
     <!--
     <script language="javascript" type="text/javascript" src="_script/boilerplate/ckeditor/ckeditor.js"></script>
@@ -36,7 +53,7 @@
    -->
 
    <script language="javascript" type="text/javascript" src="_script/boilerplate/tinymce/tinymce.min.js"></script>
-   <script language="javascript" type="text/javascript" src="_script/boilerplate/tinymce/cmsplugin.js?v0.0.9"></script>
+   <script language="javascript" type="text/javascript" src="_script/boilerplate/tinymce/cmsplugin.js?v0.0.20"></script>
 
     <!-- code editor -->
     <script language="javascript" type="text/javascript" src="_script/boilerplate/ace/ace.js"></script>
@@ -46,28 +63,28 @@
     <script language="javascript" type="text/javascript" src="_script/boilerplate/touch.js"></script>
 
     <!-- app -->
-    <script language="javascript" type="text/javascript" src="_script/config.js?v0.0.9"></script>
+    <script language="javascript" type="text/javascript" src="_script/config.js?v0.0.20"></script>
 
+    <script language="javascript" type="text/javascript" src="_script/app/enum.js?v0.0.20"></script>
 
-    <script language="javascript" type="text/javascript" src="_script/app/app.js?v0.0.9"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/api.js?v0.0.9"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/template.js?v0.0.9"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/filesystem.js?v0.0.9"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/datastore.js?v0.0.9"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/formbuilder.js?v0.0.9"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/editor.js?v0.0.9"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/media.js?v0.0.9"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/ui.js?v0.0.9"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/ui_dragdrop.js?v0.0.9"></script>
-    <script language="javascript" type="text/javascript" src="_script/app/dialog.js?v0.0.9"></script>
-
-    <script language="javascript" type="text/javascript" src="_script/main.js?v0.0.9"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/app.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/api.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/template.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/filesystem.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/datastore.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/formbuilder.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/editor.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/media.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/ui.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/ui_dragdrop.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/app/dialog.js?v0.0.20"></script>
+    <script language="javascript" type="text/javascript" src="_script/main.js?v0.0.20"></script>
 
 </head>
 
-<body>
+<body class="cms">
 <div id="container">
-
+    <div class="loader">Loading ...</div>
 </div>
 
 </body>

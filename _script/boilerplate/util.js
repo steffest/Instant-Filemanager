@@ -306,6 +306,10 @@ function createSlug(s){
     s = s.toLowerCase();
     s = s.replace(/[^a-z0-9\-]+/g,"");
 
+    s = s.split("--").join("-");
+    if (s.substr(0,1) == "-") s = s.substr(1);
+    if (s.substr(s.length-1,1) == "-") s = s.substr(0,s.length-1);
+
     return s;
 }
 

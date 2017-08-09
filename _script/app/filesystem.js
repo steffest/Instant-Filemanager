@@ -1,14 +1,3 @@
-var FILETYPE = {
-    TEXT:{name: "text file", textEditor: true, iconClass: "text"},
-    HTML:{name: "html file", textEditor: true, htmlEditor: true , codeEditor: true, iconClass: "text"},
-    IMAGE: {name: "image", iconClass: "img", imageEditor: true},
-    CODE: {name: "code file" , textEditor: true, codeEditor: true},
-    CSS: {name: "stylesheet" , textEditor: true, codeEditor: true},
-    VIDEO: {name: "video", iconClass: "video"},
-    AUDIO: {name: "audio" , iconClass: "audio"},
-    FILE:{name: "file"}
-};
-
 var FileSystem = (function () {
 
     var self = {};
@@ -49,7 +38,7 @@ var FileSystem = (function () {
     self.showFile = function(elm,forceRefresh){
         var path = $(elm).data("path");
         var apiMethod = "file";
-        if (Media.isImage(path)) apiMethod = "image";
+        if (Media.isPixelImage(path)) apiMethod = "image";
         var url = apiMethod + "/info" + path;
         if (forceRefresh) url += "?r=" + new Date().getTime();
         Api.get(url,function(data){
@@ -172,6 +161,9 @@ var FileSystem = (function () {
         }
         if (ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".png" || ext == ".bmp"){
             result = FILETYPE.IMAGE;
+        }
+        if (ext == ".svg"){
+            result = FILETYPE.VECTORIMAGE;
         }
         if (ext == ".mp4" || ext == ".m4v" || ext == ".avi" || ext == ".mov" || ext == ".mkv" || ext == ".ogv" || ext == ".3gp"){
             result = FILETYPE.VIDEO;

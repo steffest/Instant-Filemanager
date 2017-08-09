@@ -1,33 +1,3 @@
-var NAVIGATIONPANE = {
-    FOLDERS : 1,
-    FILES :2,
-    DETAIL : 3,
-    MAIN: 4,
-    TEXTEDITOR : 4,
-    TAGLIST : 5
-};
-
-var UISCOPE = {
-    FILES: 1,
-    PROFILES: 2,
-    PROFILEEDITOR: 3,
-    LISTEDITOR: 4,
-    TAGS: 5
-};
-
-var DIALOGTYPE = {
-    CONFIRMATION : {id: 1, className: "confirmation"},
-    WARNING : {id: 2, className: "warning"},
-    ERROR : {id: 3, className: "error"},
-    INPUT : {id: 4, className: "input"}
-};
-
-var LISTDISPLAYMODE = {
-    LIST: {id: 1, className: "displaylist"},
-    ICONS: {id: 1, className: "displayicons" , iconSize: 150},
-    THUMBS: {id: 1, className: "displaythumbs", iconSize: 300}
-};
-
 var UI = (function () {
 
     var self = {};
@@ -52,7 +22,8 @@ var UI = (function () {
 
     var displayOptions = {
         currentDisplayMode: LISTDISPLAYMODE.LIST,
-        showTags: false
+        showTags: false,
+        hiddenLanguages:[]
     };
 
     var currentUIScope;
@@ -64,6 +35,7 @@ var UI = (function () {
         screenwidth = $(window).width();
         UI.addNavigationPanes(container);
         UI.setNavigationPanesTitle("username",App.getCurrentUser().userName);
+        UI.setNavigationPanesTitle("displayLanguage",Config.displayLanguage);
         DataStore.addTags();
         DataStore.addProfiles(Config.get("profiles"));
 
@@ -72,15 +44,26 @@ var UI = (function () {
             UI.addSections(Config.get("adminSections"));
         }
 
+		 if (App.isContentManager()){
+            UI.addSections(Config.get("contentManagerSections"));
+        }
+
         UI.addSections(Config.get("sections"));
 
         if (App.isSystemAdmin()){
-            self.addSection("Admin","admin");
+            UI.addSections(Config.get("systemAdminSections"));
+            //self.addSection("Admin","admin");
         }
+
+        if (Config.get("showHelp")) self.addSection("Help","help");
 
         if (screenwidth<800){
             UI.toggleFileDetail();
         }
+
+        if (!initDone["profilemanager"]) self.initProfileManager();
+        var onLoad = Config.get("onLoad") || self.goHome;
+        onLoad();
     };
 
     self.getCurrentProfile = function(){
@@ -114,6 +97,21 @@ var UI = (function () {
             format: 'DD/MM/YYYY'
         });
 
+        // init timepickers
+        try{
+            $('#commonpublishfromtime').timepicker({
+                show2400: true,
+                timeFormat: "H:i"
+            });
+            $('#commonpublishtotime').timepicker({
+                show2400: true,
+                timeFormat: "H:i"
+            });
+        }catch (e){
+            console.warn("Warning: Timepicker library is not loaded");
+        }
+
+
         if (screenwidth>=800){
             UI_DRAG_DROP.init();
         }
@@ -144,6 +142,14 @@ var UI = (function () {
         switch (section){
             case "username":
                 mainpanelElm.find(".username").html(title);
+                break;
+            case "displayLanguage":
+                if(title){
+                    mainpanelElm.find(".cmslanguage").html(title.toUpperCase());
+                }else{
+                    mainpanelElm.find(".cmslanguage").hide();
+                }
+
                 break;
         }
     };
@@ -251,8 +257,61 @@ var UI = (function () {
             FormBuilder.toggleLanguage(this.id.split("_")[1]);
         });
 
+        $("#languagelist").on("click",".action_removelanguage",function(e){
+            e.preventDefault();
+            e.stopPropagation();
+
+            var lan = $(this).closest(".languageselect").attr("id").split("_")[1];
+
+            var template = Templates["inlineDialogTemplate"];
+            var content = "Are you sure you want to remove this language ("+lan.toUpperCase()+")?";
+            template = template.replace("{{content}}",content);
+
+            var baseElm = this;
+            var config = {
+                baseElm : baseElm,
+                template: template,
+                dialogType : DIALOGTYPE.WARNING,
+                onOk: function(){
+                    DataStore.deleteProfileLanguage(lan);
+                    UI.restoreInlineDialog(baseElm);
+                },
+                onCancel: function(){
+                    UI.restoreInlineDialog(baseElm);
+                }
+            };
+            UI.inlineDialog(config);
+
+
+        });
+
         $("#addlanguagelist").on("click",".languageselect",function(){
-            FormBuilder.addLanguage(this.id.split("_")[1]);
+
+
+            var template = Templates["inlineConfirmTemplate"];
+            var content = "Do you want to start from the English version for this language?";
+            template = template.replace("{{content}}",content);
+
+            var newLan = this.id.split("_")[1];
+
+            var baseElm = this;
+            var config = {
+                baseElm : baseElm,
+                template: template,
+                dialogType : DIALOGTYPE.CONFIRMATION,
+                onOk: function(){
+                    FormBuilder.addLanguage(newLan,"en");
+                    UI.restoreInlineDialog(baseElm);
+                },
+                onCancel: function(){
+                    UI.restoreInlineDialog(baseElm);
+                    FormBuilder.addLanguage(newLan);
+                }
+            };
+            UI.inlineDialog(config);
+
+
+
         });
 
         $("#listlanguagelist").on("click",".languageselect",function(){
@@ -286,6 +345,26 @@ var UI = (function () {
                     UI.restoreInlineDialog(baseElm);
                 }
             };
+
+            if (!App.isAdmin()){
+
+                template = Templates["inlineNotificationTemplate"];
+                content = "Sorry, you can't delete this item as it might have content in other languages.<br>You can delete a language instead";
+                template = template.replace("{{content}}",content);
+
+
+                config = {
+                    baseElm : baseElm,
+                    template: template,
+                    dialogType : DIALOGTYPE.WARNING,
+                    onOk: function(){
+                        UI.restoreInlineDialog(baseElm);
+                    },
+                    onCancel: function(){
+                        UI.restoreInlineDialog(baseElm);
+                    }
+                }
+            };
             UI.inlineDialog(config);
         });
 
@@ -296,11 +375,65 @@ var UI = (function () {
 
         filemanager.on("click",".action_toggleformeditor",function(){
            var elm = $(this).next();
-            console.error(elm);
             if (elm.hasClass("languages") || elm.hasClass("languageeditor_all")){
                 elm.slideToggle("fast");
                 $(this).find("i.fa").toggleClass("fa-caret-down").toggleClass("fa-caret-right");
             }
+        });
+
+        filemanager.on("click",".action_toggleaddsection",function(){
+            $(this).hide().after(Templates["addsectionTemplate"]);
+        });
+
+        filemanager.on("click",".action_addsection",function(){
+            var editor = $(this).closest(".editorelement");
+            var button = editor.find(".action_toggleaddsection");
+            button.show();
+            editor.find(".addsectionpanel").remove();
+
+            var editorName = button.attr("id").split("_")[1];
+            var sectionNumber = editor.find(".sectiontitle").length + 2;
+            var sectionName = editorName + "_section" + sectionNumber + "_";
+            var sectionType = $(this).data("type");
+
+            var sectionscontainer = editor.find(".sectionscontainer").get(0);
+
+            FormBuilder.addEditorSection(sectionscontainer,sectionName,sectionNumber,sectionType,{});
+            FormBuilder.wrap();
+
+            console.error(editorName,sectionNumber);
+        });
+
+        filemanager.on("click",".action_closeaddsection",function(){
+            var editor = $(this).closest(".editor");
+            editor.find(".action_toggleaddsection").show();
+            editor.find(".addsectionpanel").remove();
+        });
+
+        filemanager.on("click",".action_removesection",function(){
+            var sectionType = $(this).closest(".sectiontitle").find("input").attr("name");
+
+            var sectionName = sectionType.split("_")[0];
+            var sectionNumber = numeric(sectionType.split("_")[1]);
+
+            var template = Templates["inlineDialogTemplate"];
+            var content = "Are you sure you want to delete section " + sectionNumber + "?";
+            template = template.replace("{{content}}",content);
+
+            var baseElm = this;
+            var config = {
+                baseElm : baseElm,
+                template: template,
+                dialogType : DIALOGTYPE.WARNING,
+                onOk: function(){
+                    FormBuilder.removeEditorSection(sectionName,sectionNumber);
+                    UI.restoreInlineDialog(baseElm);
+                },
+                onCancel: function(){
+                    UI.restoreInlineDialog(baseElm);
+                }
+            };
+            UI.inlineDialog(config);
         });
 
         listManagerBindings();
@@ -813,7 +946,7 @@ var UI = (function () {
                     submenu = createDiv("sectionsubmenu");
                     $(submenu).insertAfter(sender);
 
-                    self.addSectionItem("Tags","tags","editfile:system/tags.txt",submenu);
+                    if (Config.useTags()) self.addSectionItem("Tags","tags","editfile:/system/tags.txt",submenu);
 
                     DataStore.addProfiles(Config.get("systemAdminProfiles"),submenu);
 
@@ -826,6 +959,25 @@ var UI = (function () {
                     }
 
 
+                }
+                break;
+            case "help":
+                if (submenu.hasClass("sectionsubmenu")) {
+                    submenu.toggle();
+                }else {
+                    submenu = createDiv("sectionsubmenu");
+                    $(submenu).insertAfter(sender);
+
+                    Api.get("file/_docs",function(data){
+                        if (data && data.files){
+                            data.files.forEach(function(file){
+                                if (file.indexOf(".htm")>0){
+                                    var label = file.split(".")[0];
+                                    self.addSectionItem(label,"docs","showexternalurl:custom/docs/" + file,submenu);
+                                }
+                            })
+                        }
+                    });
                 }
                 break;
         }
@@ -1082,6 +1234,9 @@ var UI = (function () {
         hide($("#commontagsinput"));
         hide(tagListContainer);
         tagListContainer.removeClass("editor");
+        $(".secundarymainpanelmodule").remove();
+        $(".mainpanelmodule").show();
+
         currentListViewConfig = {};
 
         switch(UIScope){
@@ -1091,7 +1246,7 @@ var UI = (function () {
                 break;
             case UISCOPE.PROFILES:
                 unHide(navigationDetailElm.find(".profileactions"));
-                if (Config.get("useFileTags")) unHide(tagListContainer);
+                if (Config.get("useProfileTags")) unHide(tagListContainer);
                 break;
             case UISCOPE.PROFILEEDITOR:
                 unHide(navigationDetailElm.find(".recordactions"));
@@ -1533,11 +1688,37 @@ var UI = (function () {
         }
 
         if (button.classList.contains("settings")){
+            $(button).closest(".caption").find(".cmslanguagemenu").hide();
             $(button).closest(".caption").find(".settingsmenu").toggle();
+        }
+
+        if (button.classList.contains("cmslanguage")){
+            $(button).closest(".caption").find(".settingsmenu").hide();
+
+            var menu = $(button).closest(".caption").find(".cmslanguagemenu");
+            var content = "";
+            Config.languages.forEach(function(lan){
+                content += '<div class="button action_changelanguage">' + lan.toUpperCase() + '</div>';
+            });
+            menu.html(content);
+
+            menu.toggle();
         }
 
         if (button.classList.contains("action_logout")){
             App.logout();
+        }
+
+        if (button.classList.contains("action_changelanguage")){
+            var lan = button.innerHTML;
+            var caption = $(button).closest(".caption");
+            caption.find(".cmslanguagemenu").hide();
+            caption.find(".cmslanguage").html(lan);
+            Config.displayLanguage = lan.toLowerCase();
+            Config.defaultLanguage = Config.displayLanguage;
+            Config.persist("displayLanguage",Config.displayLanguage);
+            self.refreshListView();
+
         }
 
 
@@ -1555,6 +1736,11 @@ var UI = (function () {
                     path: target
                 };
                 Editor.editCodeFile(fileInfo);
+                break;
+            case "showexternalurl":
+                //alert(target);
+                console.log(target);
+                self.showExternalPage(target);
                 break;
         }
 
@@ -1630,7 +1816,6 @@ var UI = (function () {
                 $(this).toggle(this.innerHTML.toLowerCase().indexOf(s)>=0);
             });
         }
-
     }
 
     self.filterListItems = function(container,value){
@@ -1652,6 +1837,61 @@ var UI = (function () {
 
         Dialog.show(config);
 
+    };
+
+    self.hideLanguage = function(lan){
+        displayOptions.hiddenLanguages = displayOptions.hiddenLanguages || [];
+        if (!displayOptions.hiddenLanguages.includes(lan)) displayOptions.hiddenLanguages.push(lan);
+    };
+
+    self.showLanguage = function(lan){
+        displayOptions.hiddenLanguages = displayOptions.hiddenLanguages || [];
+        var index = displayOptions.hiddenLanguages.indexOf(lan);
+        if (index > -1) displayOptions.hiddenLanguages.splice(index, 1);
+    };
+
+    self.toggleLanguage = function(lan){
+        displayOptions.hiddenLanguages = displayOptions.hiddenLanguages || [];
+        var index = displayOptions.hiddenLanguages.indexOf(lan);
+        if (index > -1) {
+            displayOptions.hiddenLanguages.splice(index, 1);
+        }else{
+            displayOptions.hiddenLanguages.push(lan);
+        }
+    };
+
+    self.hideAllLanguagesBut = function(lan){
+        displayOptions.hiddenLanguages = [];
+
+        Config.languages.forEach(function(_lan){
+            if (_lan != lan){
+                displayOptions.hiddenLanguages.push(_lan);
+            }
+        });
+    };
+
+    self.goHome = function(){
+        var data = {
+            cmsname: Config.title(),
+            cmsversion: Config.get("version")
+        };
+        mainpanelElm.find(".filelist").html(Mustache.render(Templates["home"],data));
+    };
+
+    self.showExternalPage = function(url){
+        var data = {
+            src: url
+        };
+
+       var  parent = UI.getNavigationPane(NAVIGATIONPANE.MAIN);
+        var htmlViewer = Mustache.render(Templates["iframecontainer"],data);
+
+        $(".mainpanelmodule").hide();
+        parent.append(htmlViewer);
+        $(".iframecontainer_close").on("click",function(){
+            $(".iframecontainer").remove();
+            $(".mainpanelmodule").show();
+        });
     };
 
     return self;

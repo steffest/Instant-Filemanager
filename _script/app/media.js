@@ -9,12 +9,22 @@ var Media = (function () {
     var loadedQueue = {};
 
     self.isImage = function(path){
-        return FileSystem.getFileType(path) == FILETYPE.IMAGE;
+        var fileType = FileSystem.getFileType(path);
+
+        return (fileType == FILETYPE.IMAGE || fileType == FILETYPE.VECTORIMAGE);
+    };
+
+    self.isPixelImage = function(path){
+        var fileType = FileSystem.getFileType(path);
+
+        return (fileType == FILETYPE.IMAGE);
     };
 
     self.getThumbUrl = function(path,width,height,forceRefresh){
         var url = Api.getBaseUrl() + "image/" + width + "x" + height + "/" + path;
         if(forceRefresh) url += "?r=" + new Date().getTime;
+
+
         return url;
     };
 

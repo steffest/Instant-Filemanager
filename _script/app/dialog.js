@@ -31,7 +31,9 @@ var Dialog = (function () {
         container = $(dialog).find(".dialogcontent");
 
         if (config.type == "file"){
-           listPagesAndArticles();
+           listPagesAndArticles(config.lan);
+        }else if (config.type == "article"){
+            listArticlesByCategory(config.lan);
         }else{
             currentDirectory = currentDirectory || "/_img/";
             listDirectory(currentDirectory);
@@ -96,12 +98,15 @@ var Dialog = (function () {
             selectFile(this);
         });
 
+        $dialog.on("click",".article",function(e){
+            selectArticle(this);
+        });
+
         $dialog.on("click",".link",function(e){
             selectLink(this);
         });
 
         $dialog.on("click",".filedirectory",function(){
-            console.error(this);
             listDirectory($(this).data("path") + "/");
 
         });
@@ -109,6 +114,11 @@ var Dialog = (function () {
         $dialog.on("click",".directoryup",function(){
             listDirectory($(this).data("parent"));
         });
+
+        $dialog.on("click",".togglecaption",function(){
+            $(this).next(".togglecaptiontarget").slideToggle("fast");
+        });
+
 
     };
 
@@ -159,7 +169,7 @@ var Dialog = (function () {
             if (result){
                 result.forEach(function(page){
                     var div = createDiv("link listitem");
-                    div.innerHTML = '<i class="fa fa-file-o"> </i> <span class="label fa">' + page.name + '</span><span class="labelurl">' + language + "/" + page.url + '</span>';
+                    div.innerHTML = '<i class="fa fa-file-o"> </i> <span class="label faw">' + page.name + '</span><span class="labelurl">' + language + "/" + page.url + '</span>';
                     container.append(div);
                 });
             }
@@ -176,9 +186,52 @@ var Dialog = (function () {
                     var div = createDiv("link listitem");
                     page.url = page.slug;
                     if (page.category) page.url = page.category + "/" + page.url;
-                    div.innerHTML = '<i class="fa fa-file-o"> </i> <span class="label fa">' + page.name + '</span><span class="labelurl">' + language + "/" + page.url + '</span>';
+                    div.innerHTML = '<i class="fa fa-file-o"> </i> <span class="label faw">' + page.name + '</span><span class="labelurl">' + language + "/" + page.url + '</span>';
                     container.append(div);
                 });
+            }
+
+        });
+    };
+
+    var listArticlesByCategory = function(language){
+        container.empty();
+        container.addClass('hascolumns');
+
+        language = language || Config.defaultLanguage;
+        Api.get("data/articles/" + language + "?fields=id,slug,name,category,state",function(result){
+            if (result){
+
+                var recipe = createDiv("listitemgroup togglecaptiontarget hidden");
+                var blog = createDiv("listitemgroup togglecaptiontarget hidden");
+                var discover = createDiv("listitemgroup togglecaptiontarget hidden");
+
+                result.forEach(function(article){
+                    var target = undefined;
+                    if (article.state == "published" || article.state == "draft"){
+                        if (article.category == "recipe") target = $(recipe);
+                        if (article.category == "blog") target = $(blog);
+                        if (article.category == "discover") target = $(discover);
+                    }
+
+                    if (target){
+                        var div = createDiv("article listitem");
+                        article.url = article.slug;
+                        if (article.category) article.url = article.category + "/" + article.url;
+                        div.innerHTML = '<i class="fa fa-file-o"> </i> <span class="label faw" data-id="'+article.id+'" data-category="'+ article.category +'">' + article.name + '</span><span class="labelurl">' + language + "/" + article.url + '</span> ';
+                        target.append(div);
+                    }
+
+                });
+
+                container.append('<h3 class="togglecaption"><i class="fa fa-chevron-right"></i> Recipe</h3>');
+                container.append(recipe);
+                container.append('<h3 class="togglecaption"><i class="fa fa-chevron-right"></i> Blog</h3>');
+                container.append(blog);
+                container.append('<h3 class="togglecaption"><i class="fa fa-chevron-right"></i> Discover</h3>');
+                container.append(discover);
+
+
             }
 
         });
@@ -205,6 +258,16 @@ var Dialog = (function () {
 
     var selectLink = function(link){
         selection = $(link).find(".labelurl").html();
+        if (currentConfig && currentConfig.onSelect) currentConfig.onSelect(selection);
+        self.close();
+    };
+
+    var selectArticle = function(link){
+        var label = $(link).find(".label");
+        var id = label.data("id");
+        var category = label.data("category");
+
+        selection = id + ": " + category + ": " + label.text();
         if (currentConfig && currentConfig.onSelect) currentConfig.onSelect(selection);
         self.close();
     };

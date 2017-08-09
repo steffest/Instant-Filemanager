@@ -127,7 +127,7 @@ var DataStore = (function () {
         });
         container.append(searchBox);
 
-        var fields="id,name,state,tags,category";
+        var fields="id,name,state,tags,category,starred";
         var orderBy = "orderby=name";
 
         var getIcon = function(item){
@@ -141,7 +141,7 @@ var DataStore = (function () {
           return item.name;
         };
 
-        if (profile == "elpees" || profile == "pockets"){
+        if (profile == "elpees" || profile == "singles" || profile == "pockets"){
             // TODO: FIXME!!
             fields="id,title as name,author,cover";
             orderBy = "orderby=author,name";
@@ -163,8 +163,19 @@ var DataStore = (function () {
             };
         }
 
-        var url = "data/" + profile + "/select/" + fields;
-        if (category) url = "data/" + profile + "/category/" + category + "?fields=" + fields;
+        if (profile == "db_redirect"){
+            console.log("list redirects");
+            fields="id,old as name,new,language";
+        }
+
+        var url = "data/" + profile;
+        if (Config.displayLanguage) url += "/" + Config.displayLanguage;
+
+        if (category) {
+            url += "/category/" + category + "?fields=" + fields;
+        }else{
+            url += "/select/" + fields;
+        }
 
         var suffix = url.indexOf("?")>0 ? "&" : "?";
         url += suffix + orderBy;
@@ -184,6 +195,9 @@ var DataStore = (function () {
                         elm.appendChild(getIcon(item));
                     }else{
                         label.classList.add("faw");
+                        if (item.starred && item.starred != "0"){
+                            label.classList.add("starred");
+                        }
                         if (item.state){
                             container.addClass("hascolumns");
                             state = createDiv("labelstate");
@@ -274,7 +288,6 @@ var DataStore = (function () {
         // get structure of profile
         // TODO: Cache this ?
         Api.get("data/" + profile + "/structure" ,function(data){
-            console.log(data);
 
             if (data && data!= "generic" && data.fields){
                 var fields = data.fields;
@@ -311,6 +324,8 @@ var DataStore = (function () {
 
     function renderProfileFormData(profile,id,fields,profileStructure,data){
 
+        console.log("rendering ProfileFormData " + profile + " " + id);
+
         currentProfileData={
             profile: profile,
             id: id,
@@ -318,6 +333,8 @@ var DataStore = (function () {
             profileStructure: profileStructure,
             data: data
         };
+
+
 
         if (id==0){
             if (data && data.multiLanguage){
@@ -329,11 +346,18 @@ var DataStore = (function () {
             }
         }
 
-        console.log(data);
+
+
         if (data){
             var formContainer = editorContainer.find(".formcontent");
+            console.log("setContainerElm");
+            window.formContainer = formContainer;
+            console.log(formContainer);
             FormBuilder.setContainerElm(formContainer);
+            console.log("setContainerElm");
             FormBuilder.setCommonEditors(profileStructure);
+
+            console.log("CommonEditors set");
 
             var processedItems = {};
 
@@ -356,13 +380,7 @@ var DataStore = (function () {
 
                     var editor = FormBuilder.getEditorTypeForField(field);
 
-                    if (data.multiLanguage){
-                        FormBuilder.addEditor(editor,key,data,field,true);
-                    }else{
-                        var value = data[key];
-                        if (typeof value == "undefined") value = "";
-                        FormBuilder.addEditor(editor,key,value,field);
-                    }
+                    FormBuilder.addEditor(editor,key,data,field,data.multiLanguage);
 
                     processedItems[key] = true;
                 }
@@ -386,7 +404,6 @@ var DataStore = (function () {
                 }
 
                 // add values not present in template if needed
-                console.error(profileStructure.includeAll);
                 if (profileStructure.includeAll){
                     for (var key in data){
                         if (data.hasOwnProperty(key) && !processedItems[key]){
@@ -436,27 +453,76 @@ var DataStore = (function () {
     self.cancelEditProfile = function(){
         if (typeof CMS != "undefined" && CMS.isFrontend){
             CMS.closeEditor();
+        }else{
+            self.listProfile(currentProfile);
         }
-        self.listProfile(currentProfile);
+
     };
 
     self.updateProfile = function(){
 
-        FormBuilder.prepareSubmit();
+        var postActions = FormBuilder.prepareSubmit();
 
         var data = editorContainer.serialize();
-        console.log(data);
+
+        // set all unckecked checkboxes to empty, otherwise their saved value will not be overwritten.
+        editorContainer.find("input.checkbox:not(:checked)").each(function(){
+            if (this.name) data += "&" + this.name + "=";
+        });
+
+        //console.log(data);
         Api.post("data/" + currentProfile + "/" + currentProfileId + "/update",data,function(resultdata){
-            self.listProfile(currentProfile);
+
+            var done = true;
+
+            var onDone = function(){
+                if (typeof CMS != "undefined" && CMS.isFrontend){
+                    CMS.closeEditor();
+                    window.location.reload(true);
+                }else{
+                    self.listProfile(currentProfile);
+                }
+            };
+
+            if (postActions && postActions.length){
+                var todoCount =  postActions.length;
+                var doneCount = 0;
+                postActions.forEach(function(postAction){
+                   if (postAction.action == "slugChange"){
+                       done = false;
+                       var slugData = {
+                           language: postAction.language,
+                           old: postAction.old,
+                           "new": postAction.new
+                       };
+                       Api.post("data/db_redirect/0/update",slugData,function(){
+                           doneCount++;
+                           if (doneCount == todoCount) onDone();
+                       });
+                   }
+                });
+            }
+
+            if (done){
+                onDone();
+            }
+
+
         })
 
     };
 
     self.deleteProfile = function(){
-        Api.get("data/" + currentProfile + "/" + currentProfileId + "/delete",function(resultdata){
-            self.listProfile(currentProfile);
-        })
-
+        if (App.isAdmin()){
+            Api.get("data/" + currentProfile + "/" + currentProfileId + "/delete",function(resultdata){
+                if (typeof CMS != "undefined" && CMS.isFrontend){
+                    CMS.closeEditor();
+                    window.location.reload(true);
+                }else{
+                    self.listProfile(currentProfile);
+                }
+            })
+        }
     };
 
     self.duplicateProfile = function(){
@@ -470,6 +536,15 @@ var DataStore = (function () {
             editorContainer.find("input[name='"+lan+":name']").val(copyOfName);
         });
         editorContainer.find("input[name='name']").val(copyOfName);
+
+    };
+
+    self.deleteProfileLanguage = function(lan){
+        Api.get("data/" + currentProfile + "/" + lan + "/" +  currentProfileId  + "/delete",function(resultData){
+            console.log("result delete",resultData);
+            $(".language_" + lan).hide();
+            $("#languageselect_" + lan).hide();
+        });
 
     };
 
@@ -502,7 +577,7 @@ var DataStore = (function () {
             container.empty();
             UI.setScope(UISCOPE.LISTEDITOR);
 
-            var hasMultipleLanguages = list.multiLanguage;
+            var hasMultipleLanguages = list && list.multiLanguage;
             if (hasMultipleLanguages){
                 language = language || Config.defaultLanguage;
                 var activeLanguages = [];
@@ -653,7 +728,7 @@ var DataStore = (function () {
     };
 
     var createSortableListFormHeader = function(fields){
-        var elm = createDiv("inlineformheader");
+        var elm = createDiv("inlineformheader nowrap");
 
         elm.appendChild(createDiv("buttons"));
 

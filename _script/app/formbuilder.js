@@ -1,16 +1,3 @@
-var FORMEDITOR = {
-    TEXT : {id: 1, inlineStyle: "col"},
-    TEXTAREA : {id: 2, inlineStyle: "col"},
-    HTML : {id: 3, inlineStyle: "col"},
-    SELECT : {id: 4, inlineStyle: "colsmall"},
-    DATE: {id: 5, inlineStyle: "col"},
-    CHECKBOX: {id: 6, inlineStyle: "box"},
-    FILEUPLOAD: {id: 7, inlineStyle: "col"},
-    HIDDEN: {id: 8, inlineStyle: "col"},
-    IMAGE: {id: 9, inlineStyle: "col"},
-    CUSTOM: {id: 10, inlineStyle: "col"}
-};
-
 var FormBuilder = (function () {
 
     var self = {};
@@ -20,6 +7,8 @@ var FormBuilder = (function () {
 
     var onAddTag;
     var onRemoveTag;
+
+    var currentProfileData;
 
     self.setContainerElm = function(elm){
         formContainer = elm;
@@ -60,7 +49,7 @@ var FormBuilder = (function () {
     };
 
 
-    self.addEditor = function(type,name,value,editorProperties,hasMultipleLanguages){
+    self.addEditor = function(type,name,data,editorProperties,hasMultipleLanguages){
         var editor = createDiv("editor");
 
         if (editorProperties && editorProperties.extention) editor.className += " extended";
@@ -68,10 +57,15 @@ var FormBuilder = (function () {
         var handled = false;
         var input;
         var lanValues;
+        currentProfileData = data;
+
+        var value = "";
+        if (data) value = data[name];
+        if (typeof value == "undefined") value = "";
 
         var mainValue = value;
         if (hasMultipleLanguages){
-            lanValues = value[Config.defaultLanguage] || [];
+            lanValues = data[Config.defaultLanguage] || [];
             mainValue = lanValues[name] || "";
         }
 
@@ -168,6 +162,23 @@ var FormBuilder = (function () {
 
             if (type == FORMEDITOR.HIDDEN) {
                 editor.className += " hidden";
+
+                if (editorProperties.name == "orislug"){
+                    postProccessing.push(function(){
+                        //set current slug so we can compare them later
+
+                        var formContent = $(".formcontent");
+
+                        var input = document.getElementsByName("activelanguages");
+                        if (input && input.length) input = input[0];
+                        if (input && input.value){
+                            var languages = input.value.split(",");
+                            languages.forEach(function(lan){
+                                formContent.find("[name='"+lan+":orislug']").val(createSlug(formContent.find("[name='"+lan+":name']").val()));
+                            })
+                        }
+                    });
+                }
             }else{
                 var toggleIcon = createFaIcon("caret-down");
                 var label = createDiv("itemcaption action_toggleformeditor");
@@ -182,24 +193,28 @@ var FormBuilder = (function () {
             if (hasMultipleLanguages){
                 if (editorProperties.global){
                     multiEditors = createDiv("languageeditor_all language_all flag_all");
-                    self.addEditorElement(multiEditors,type,name,mainValue,editorProperties);
+                    self.addEditorElement(multiEditors,type,name,mainValue,editorProperties,data);
                 }else{
                     multiEditors = createDiv("languages");
                     $(multiEditors).data("type",type);
                     $(multiEditors).data("name",name);
                     $(multiEditors).data("ext",editorProperties);
 
+                    var hiddenLanguages = UI.getDisplayOptions().hiddenLanguages || [];
+
                     Config.languages.forEach(function(lan){
-                        lanValues = value[lan];
+                        lanValues = data[lan];
                         if (lanValues){
                             var lanName = lan + ":" + name;
                             var lanValue = lanValues[name] || "";
-                            var lanEditor = createDiv("languageeditor language_" + lan  + " flag_" + lan);
+                            var visibleClassName = "";
+                            if (hiddenLanguages.includes(lan)) visibleClassName = "hidden";
+                            var lanEditor = createDiv("languageeditor language_" + lan  + " flag_" + lan + " " + visibleClassName);
 
                             if (type == FORMEDITOR.HIDDEN){
                                 lanEditor.className = "";
                             }
-                            self.addEditorElement(lanEditor,type,lanName,lanValue,editorProperties);
+                            self.addEditorElement(lanEditor,type,lanName,lanValue,editorProperties,lanValues);
                             multiEditors.appendChild(lanEditor);
                         }
                     });
@@ -208,7 +223,7 @@ var FormBuilder = (function () {
 
                 editor.appendChild( multiEditors);
             }else{
-                self.addEditorElement(editor,type,name,mainValue,editorProperties);
+                self.addEditorElement(editor,type,name,mainValue,editorProperties,data);
             }
 
         }
@@ -216,12 +231,19 @@ var FormBuilder = (function () {
         formContainer.append(editor);
     };
 
-    self.addEditorElement = function(parent,type,name,value,ext,language){
+    self.addEditorElement = function(parent,type,name,value,ext,fullData){
         var input;
+
+        $(parent).addClass("editorelement");
 
         switch (type){
             case FORMEDITOR.TEXT:
                 input = createInput("inputBox",name,null,value);
+                parent.appendChild(input);
+                break;
+            case FORMEDITOR.PASSWORD:
+                input = createInput("inputBox",name,null,value);
+                input.type = "password";
                 parent.appendChild(input);
                 break;
 
@@ -238,6 +260,33 @@ var FormBuilder = (function () {
                 postProccessing.push(function(){
                     HTMLEDITOR.init(name);
                 });
+
+
+                if (ext && ext.sections && fullData){
+
+                    var sectionsContainer = createDiv("sectionscontainer");
+                    parent.appendChild(sectionsContainer);
+
+                    var maxSections = 10;
+                    var sectionCount = 0;
+
+                    for (var sectionNumber = 2;sectionNumber<maxSections;sectionNumber++){
+                        var sectionName = name + "_section" + sectionNumber + "_";
+
+                        var sectionType = getSectionPartValue(fullData,sectionName + "type");
+                        if (sectionType){
+                            self.addEditorSection(sectionsContainer,sectionName,sectionNumber,sectionType,fullData);
+                            sectionCount++;
+                        }
+                    }
+                    if (sectionCount) $(input).addClass("small");
+
+                    var sectionButton = createDiv("action action_toggleaddsection","section_" + name);
+                    sectionButton.innerHTML = '<i class="fa fa-plus-square-o"></i> Add section';
+
+                    parent.appendChild(sectionButton);
+                }
+
                 break;
 
             case FORMEDITOR.SELECT:
@@ -260,6 +309,53 @@ var FormBuilder = (function () {
 
                 parent.appendChild(input);
                 break;
+
+            case FORMEDITOR.CHECKBOX:
+                var values = ext.values;
+                if (values){
+                    values = values.split(",");
+                }
+
+                input = createHidden(name,null,value);
+
+                var checkBoxes = createDiv("checkboxes");
+
+                for (var i = 0, len = values.length; i<len; i++){
+                    var v = values[i];
+                    var boxId = name + "_checkbox_" + i;
+
+                    var boxItem = createDiv();
+
+                    var box = createInput("checkbox",boxId,boxId,v);
+                    box.type = "checkbox";
+
+                    if (value.indexOf(v)>=0) box.checked = true;
+
+                    var label = document.createElement("label");
+                    label.htmlFor = boxId;
+                    label.innerHTML = v;
+
+                    boxItem.appendChild(box);
+                    boxItem.appendChild(label);
+
+                    box.onchange = function(){
+                        if (this.checked){
+                            input.value =  concatStringAdd(input.value,this.value);
+                        }else{
+                            input.value =  concatStringRemove(input.value,this.value);
+                        }
+
+                    };
+
+                    checkBoxes.appendChild(boxItem);
+                }
+
+
+                parent.appendChild(checkBoxes);
+                parent.appendChild(input);
+                break;
+
+
             case FORMEDITOR.DATE:
                 value = formatDate(value);
                 input = createInput("inputBox",name,null,value);
@@ -342,8 +438,21 @@ var FormBuilder = (function () {
                     }
                 }
 
+                function updateImageInfo(value){
+                    Media.getImageInfo(value,function(info){
+                        if (info && info.height){
+                            var formContent = $(".formcontent");
+                            formContent.find("[name='imagewidth']").val(info.width);
+                            formContent.find("[name='imageheight']").val(info.height);
+                        }
+                    })
+                }
+
                 input = createInput("inputBox",name,null,value);
-                input.onchange = function(){showImage(this.value)};
+                input.onchange = function(){
+                    showImage(this.value);
+                    updateImageInfo(this.value);
+                };
                 showImage(value);
                 parent.appendChild(input);
 
@@ -354,6 +463,7 @@ var FormBuilder = (function () {
                         onSelect: function (name) {
                             input.value = name;
                             showImage(name);
+                            updateImageInfo(name);
                         }
                     });
                 };
@@ -375,6 +485,7 @@ var FormBuilder = (function () {
                                 if (!ext.baseUrl && ext.uploadPath) url = uploadUrl + url;
                                 input.value = url;
                                 showImage(url);
+                                updateImageInfo(url);
                             }
                         }
                     };
@@ -528,6 +639,129 @@ var FormBuilder = (function () {
         executeFormPostProcessor();
     };
 
+    self.addEditorSection = function(parent,sectionName,sectionNumber,sectionType,fullData){
+
+        var HTMLEditorNames = [];
+        var sectionPartName;
+        var sectionPartValue;
+
+        var sectionContainer = createDiv("sectioncontainer");
+
+        var sectionTitle = createDiv("sectiontitle");
+        sectionTitle.innerHTML = "<i class='fa fa-times action_removesection'></i>Section <span class='sectionnumber'>" + sectionNumber + '</span>';
+
+        var sectionTypeHolder = createHidden(sectionName + "type",null,sectionType);
+        sectionTitle.appendChild(sectionTypeHolder);
+
+        sectionContainer.appendChild(sectionTitle);
+
+        switch(sectionType){
+            case "full":
+                sectionPartName = sectionName + "body";
+                sectionPartValue = getSectionPartValue(fullData,sectionPartName) || "";
+                var sectionInput = createTextarea("htmltextarea small",sectionPartName,null,sectionPartValue);
+                HTMLEditorNames.push(sectionPartName);
+                sectionContainer.appendChild(sectionInput);
+                break;
+            case "sidebar":
+                var sectionPanel = createDiv("sectionpanel sidebarright");
+
+                sectionPartName = sectionName + "body";
+                sectionPartValue = getSectionPartValue(fullData,sectionPartName) || "";
+                var sectionInputBody = createTextarea("htmltextarea small",sectionPartName,null,sectionPartValue);
+                HTMLEditorNames.push(sectionPartName);
+
+                sectionPartName = sectionName + "sidebar";
+                sectionPartValue = getSectionPartValue(fullData,sectionPartName) || "";
+                var sectionInputSidebar = createTextarea("htmltextarea small narrow",sectionPartName,null,sectionPartValue);
+                HTMLEditorNames.push(sectionPartName);
+
+                var bodyElm = createDiv("body");
+                var sidebarElm = createDiv("sidebar");
+                bodyElm.appendChild(sectionInputBody);
+                sidebarElm.appendChild(sectionInputSidebar);
+
+                sectionPanel.appendChild(bodyElm);
+                sectionPanel.appendChild(sidebarElm);
+                sectionPanel.appendChild(createDiv("clear"));
+
+                sectionContainer.appendChild(sectionPanel);
+
+                break;
+            case "sidebarright":
+                var sectionPanel = createDiv("sectionpanel");
+
+                sectionPartName = sectionName + "body";
+                sectionPartValue = getSectionPartValue(fullData,sectionPartName) || "";
+                var sectionInputBody = createTextarea("htmltextarea small narrow",sectionPartName,null,sectionPartValue);
+                HTMLEditorNames.push(sectionPartName);
+
+                sectionPartName = sectionName + "sidebarright";
+                sectionPartValue = getSectionPartValue(fullData,sectionPartName) || "";
+                var sectionInputSidebar = createTextarea("htmltextarea small",sectionPartName,null,sectionPartValue);
+                HTMLEditorNames.push(sectionPartName);
+
+                var bodyElm = createDiv("body");
+                var sidebarElm = createDiv("sidebar");
+                bodyElm.appendChild(sectionInputBody);
+                sidebarElm.appendChild(sectionInputSidebar);
+
+                sectionPanel.appendChild(bodyElm);
+                sectionPanel.appendChild(sidebarElm);
+                sectionPanel.appendChild(createDiv("clear"));
+
+                sectionContainer.appendChild(sectionPanel);
+
+                break;
+
+        }
+
+        parent.appendChild(sectionContainer);
+
+        HTMLEditorNames.forEach(function(HTMLEditorName){
+            postProccessing.push(function(){
+                HTMLEDITOR.init(HTMLEditorName);
+            });
+        });
+    };
+
+
+    self.removeEditorSection = function(sectionName,sectionNumber){
+        console.log("Removing section",sectionName,sectionNumber);
+        HTMLEDITOR.saveAll();
+
+        var sectionContainer =  formContainer.find("input[name='" + sectionName +"_section" + sectionNumber + "_type']").closest(".sectioncontainer");
+        sectionContainer.remove();
+
+        var maxSections = 10;
+        for (var i = parseInt(sectionNumber) + 1; i<maxSections ; i++){
+            var sectionType = formContainer.find("input[name='" + sectionName +"_section" +  i + "_type']");
+
+            if (sectionType.length){
+                sectionContainer = sectionType.closest(".sectioncontainer");
+                var newSectionNumber = i-1;
+
+                var sectionOldName = sectionName +"_section" +  i  + "_";
+                var sectionNewName = sectionName +"_section" +  newSectionNumber  + "_";
+
+                sectionContainer.find(".sectionnumber").html(newSectionNumber);
+
+                HTMLEDITOR.rename(sectionOldName  + "body",sectionNewName + "body");
+                if (sectionType.val() == "sidebar"){
+                    HTMLEDITOR.rename(sectionOldName  + "sidebar",sectionNewName + "sidebar");
+                }
+
+                sectionType.get(0).name = sectionNewName + "type";
+
+                console.log("Updated section " +  i);
+
+
+            }else{
+                break;
+            }
+        }
+    };
+
     var clearFormPostProcessor = function(){
         HTMLEDITOR.clear();
         postProccessing = [];
@@ -543,6 +777,9 @@ var FormBuilder = (function () {
     };
 
     self.prepareSubmit = function(){
+
+        var postActions = [];
+
         if (hasHTML){
             HTMLEDITOR.updateElements();
         }
@@ -566,7 +803,7 @@ var FormBuilder = (function () {
         elm = el("access_value");
         if (elm) elm.value = $("#commonaccess").val();
 
-        // update slugs
+        // update slugs and list hreflang values
         var formContent = $(".formcontent");
         formContent.find("[name='slug']").val(createSlug(formContent.find("[name='name']").val()));
 
@@ -574,10 +811,31 @@ var FormBuilder = (function () {
         if (input && input.length) input = input[0];
         if (input && input.value){
             var languages = input.value.split(",");
+            var hreflang = {};
             languages.forEach(function(lan){
-                formContent.find("[name='"+lan+":slug']").val(createSlug(formContent.find("[name='"+lan+":name']").val()));
+                var newSlug = createSlug(formContent.find("[name='"+lan+":name']").val());
+                formContent.find("[name='"+lan+":slug']").val(newSlug);
+                var oldSlug =  formContent.find("[name='"+lan+":orislug']").val();
+
+                // keep track of slug changes
+                if (oldSlug && newSlug && oldSlug != newSlug){
+                    postActions.push({action: "slugChange", old:oldSlug, new:newSlug, language: lan});
+                }
+
+                var url = formContent.find("[name='"+lan+":url']").val() || newSlug;
+                if (url && url=="home") url = "";
+                hreflang[lan] = url;
+            });
+
+            console.error(hreflang);
+            hreflang = JSON.stringify(hreflang);
+
+            languages.forEach(function(lan){
+                formContent.find("[name='"+lan+":json_hreflang']").val(hreflang);
             })
         }
+
+        return postActions;
 
     };
 
@@ -621,6 +879,9 @@ var FormBuilder = (function () {
                    break;
                case "image":
                    result = FORMEDITOR.IMAGE;
+                   break;
+               case "password":
+                   result = FORMEDITOR.PASSWORD;
                    break;
            }
         }
@@ -689,9 +950,17 @@ var FormBuilder = (function () {
 
         container.empty();
         var lanActive = {};
+        var hiddenLanguages = UI.getDisplayOptions().hiddenLanguages || [];
         activeLanguages.forEach(function(lan){
-            var lanSelect = createDiv("languageselect flag_" + lan,"languageselect_" + lan);
-            lanSelect.innerHTML = Config.languageNames[lan];
+            var activeClassName = "";
+            if (hiddenLanguages.includes(lan)) activeClassName = "inactive";
+            var lanSelect = createDiv("languageselect flag_" + lan + " " + activeClassName,"languageselect_" + lan);
+
+            var removeButton = createDiv("fa fa-remove action_removelanguage");
+            lanSelect.appendChild(removeButton);
+
+            lanSelect.innerHTML += Config.languageNames[lan];
+
             container.append(lanSelect);
             lanActive[lan] = true;
         });
@@ -710,11 +979,21 @@ var FormBuilder = (function () {
     self.toggleLanguage = function(lan){
         $(".language_" + lan).toggle();
         $("#languageselect_" + lan).toggleClass("inactive");
+        UI.toggleLanguage(lan);
+
     };
 
-    self.addLanguage = function(lan){
+    self.addLanguage = function(lan,sourceLan){
         postProccessing = [];
         var editors = $(".formcontent").find(".languages");
+
+        var lanValues = {};
+
+        if (sourceLan){
+            currentProfileData[lan] = currentProfileData[sourceLan];
+            lanValues = currentProfileData[lan] || {};
+        }
+
 
         editors.each(function(index,editor){
             var type = $(editor).data("type");
@@ -722,9 +1001,9 @@ var FormBuilder = (function () {
             var ext = $(editor).data("ext");
 
             var lanName = lan + ":" + name;
-            var lanValue = "";
+            var lanValue = lanValues[name] || "";
             var lanEditor = createDiv("languageeditor language_" + lan + " flag_" + lan);
-            self.addEditorElement(lanEditor,type,lanName,lanValue,ext);
+            self.addEditorElement(lanEditor,type,lanName,lanValue,ext,lanValues);
             editor.appendChild(lanEditor);
 
         });
@@ -754,6 +1033,13 @@ var FormBuilder = (function () {
 
 
     };
+
+    function  getSectionPartValue(fullData,name){
+        var sectionName = name;
+        if (sectionName.indexOf(":")>0) sectionName = sectionName.split(":")[1];
+
+        return fullData[sectionName];
+    }
 
     return self;
 })();
