@@ -1,45 +1,44 @@
 html {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
-*, *:before, *:after {
-    box-sizing: inherit;
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
 }
-
-html,body{
-    font-family: sans-serif;
-    padding: 0;
-    margin: 0;
+html,
+body {
+  padding: 0;
+  margin: 0;
 }
-
-.hidden{
-    display: none;
+body.cms {
+  font-family: sans-serif;
 }
-
-.clear{
-    clear: both;
+.hidden {
+  display: none;
 }
-
+.clear {
+  clear: both;
+}
 [draggable] {
-    -moz-user-select: none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
-    /* Required to make elements draggable in old WebKit */
-    -khtml-user-drag: element;
-    -webkit-user-drag: element;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
 }
-
-.blanket{
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 2000;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: none;
+.blanket {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 2000;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: none;
 }
-
-.nowrap{
-    white-space: nowrap;
+.nowrap {
+  white-space: nowrap;
 }

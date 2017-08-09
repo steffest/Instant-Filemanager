@@ -62,6 +62,13 @@
   color: @textIconColor;
 }
 
+.file .label.faw.starred:before,
+.record .label.faw.starred:before{
+  content: "\f005";
+  margin: 0 4px 0 3px;
+  color: #fece02;
+}
+
 .listitem:hover,
 .directoryup:hover{
   background-color: @itemHover;
@@ -190,7 +197,18 @@
   border: none;
   border-bottom: 1px solid #c1d1cf;
   padding: 4px;
-  width: 65%;
+  width: 40%;
+  font-size: 11px;
+}
+
+#commonpublishdate .timepicker{
+  float: left;
+  border: none;
+  border-bottom: 1px solid #c1d1cf;
+  padding: 4px;
+  width: 20%;
+  font-size: 11px;
+  margin-left: 4px;
 }
 
 .profilelist .profilecategories,
@@ -276,6 +294,13 @@
   font-size: 12px;
 }
 
+.directorycontainer .section.sectionhelp.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f05a";
+  font-size: 12px;
+}
+
 .directorycontainer .menu.faw:before{
   width: 16px;
   display: inline-block;
@@ -292,6 +317,12 @@
   width: 16px;
   display: inline-block;
   content: "\f02c";
+}
+
+.directorycontainer .docs.faw:before{
+  width: 16px;
+  display: inline-block;
+  content: "\f129";
 }
 
 
@@ -314,6 +345,7 @@ input.itemcaption{
   text-align: center;
   padding: 4px;
   background-color: white;
+  color: @textColor;
 }
 
 .filemanager.nofiledetail .collapsedactions .inlineDialog{
@@ -428,6 +460,7 @@ input.itemcaption{
   width: 20px;
   height: 20px;
   margin-top: 8px;
+  position: absolute;
 }
 
 .inlineformrow .action_removelistitem:hover{
@@ -514,6 +547,16 @@ input.itemcaption{
 }
 
 
+.iframecontainer.mainpanelmodule{
+  height: 100%;
+
+  iframe{
+    height: 100%;
+    width: 100%;
+    border: 0;
+  }
+}
+
 
 .blanket{
   background-color: rgba(0, 0, 0, 0.4);
@@ -586,6 +629,8 @@ input.itemcaption{
   width: 200px;
   padding: 4px;
 }
+
+
 
 
 

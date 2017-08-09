@@ -1,7 +1,7 @@
 @import "var";
 
 #dialogbox{
-  position: absolute;
+  position: fixed;
   border: 1px solid grey;
   background-color: white;
   left: 10%;
@@ -28,6 +28,29 @@
     right: 0;
     overflow: scroll;
     overflow-x: hidden;
+
+
+    .togglecaption{
+      border-bottom: 1px solid @itemBorder;
+      padding: 4px;
+      margin: 0;
+      font-weight: normal;
+      font-size: 16px;
+      color: @actionTitle;
+
+      i{
+        font-size: 14px;
+      }
+
+      &:hover{
+        background-color: @itemHover;
+        cursor: pointer;
+      }
+    }
+
+    .listitemgroup{
+      padding: 4px;
+    }
 
   }
 

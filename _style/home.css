@@ -1,0 +1,23 @@
+.home {
+  padding: 50px 0 0 0;
+}
+.home h1 {
+  color: #3FB3E7;
+  font-size: 3em;
+  margin: 0;
+  padding: 0;
+}
+.home h3 {
+  color: #3FB3E7;
+  margin: 0;
+  padding: 0;
+  font-size: 1em;
+}
+.home .info {
+  font-size: 0.9em;
+  color: #7a888a;
+  padding-top: 20px;
+}
+.home .info a {
+  color: #3FB3E7;
+}

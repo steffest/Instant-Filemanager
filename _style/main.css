@@ -49,6 +49,12 @@
   margin: 0 4px;
   color: #66758d;
 }
+.file .label.faw.starred:before,
+.record .label.faw.starred:before {
+  content: "\f005";
+  margin: 0 4px 0 3px;
+  color: #fece02;
+}
 .listitem:hover,
 .directoryup:hover {
   background-color: #d2e6ff;
@@ -154,7 +160,17 @@
   border: none;
   border-bottom: 1px solid #c1d1cf;
   padding: 4px;
-  width: 65%;
+  width: 40%;
+  font-size: 11px;
+}
+#commonpublishdate .timepicker {
+  float: left;
+  border: none;
+  border-bottom: 1px solid #c1d1cf;
+  padding: 4px;
+  width: 20%;
+  font-size: 11px;
+  margin-left: 4px;
 }
 .profilelist .profilecategories,
 .directorycontainer .sectionsubmenu {
@@ -235,6 +251,12 @@
   content: "\f085";
   font-size: 12px;
 }
+.directorycontainer .section.sectionhelp.faw:before {
+  width: 16px;
+  display: inline-block;
+  content: "\f05a";
+  font-size: 12px;
+}
 .directorycontainer .menu.faw:before {
   width: 16px;
   display: inline-block;
@@ -250,6 +272,11 @@
   display: inline-block;
   content: "\f02c";
 }
+.directorycontainer .docs.faw:before {
+  width: 16px;
+  display: inline-block;
+  content: "\f129";
+}
 input.itemcaption {
   padding: 4px;
   background-color: #f2f2f5;
@@ -262,6 +289,7 @@ input.itemcaption {
   text-align: center;
   padding: 4px;
   background-color: white;
+  color: black;
 }
 .filemanager.nofiledetail .collapsedactions .inlineDialog {
   min-width: 200px;
@@ -352,6 +380,7 @@ input.itemcaption {
   width: 20px;
   height: 20px;
   margin-top: 8px;
+  position: absolute;
 }
 .inlineformrow .action_removelistitem:hover {
   color: #a81238;
@@ -418,6 +447,14 @@ input.itemcaption {
   background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
+}
+.iframecontainer.mainpanelmodule {
+  height: 100%;
+}
+.iframecontainer.mainpanelmodule iframe {
+  height: 100%;
+  width: 100%;
+  border: 0;
 }
 .blanket {
   background-color: rgba(0, 0, 0, 0.4);

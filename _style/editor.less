@@ -50,6 +50,11 @@
         background-color: white;
     }
 
+    .checkboxes label{
+        display: inline-block;
+        margin: 3px 0 0 5px;
+    }
+
     .fileupload{
         .attachmentfile{
             padding: 6px 10px;
@@ -89,6 +94,161 @@
             }
         }
     }
+
+    .sectionscontainer{
+        .sectiontitle{
+            margin-top: 10px;
+            padding: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            clear: both;
+
+            i{
+                display: none;
+                color: grey;
+                position: absolute;
+                right: 10px;
+
+                &:hover{
+                    color: @negative;
+                    cursor: pointer;
+                }
+            }
+
+            &:hover{
+                i{
+                    display: block;
+                }
+            }
+        }
+
+
+        .sectionpanel{
+            .body{
+                float: left;
+                width: 60%;
+            }
+            .sidebar{
+                float: left;
+                width: 40%;
+            }
+
+            &:after{
+                content: " ";
+                clear: both;
+            }
+
+            &.sidebarright{
+                .body{
+                    float: left;
+                    width: 40%;
+                }
+
+                .sidebar{
+                    float: left;
+                    width: 60%;
+                }
+            }
+        }
+    }
+
+    .action_toggleaddsection{
+        margin-top: 10px;
+        clear: both;
+
+    }
+
+    .sectiontypes{
+        clear: both;
+        margin-bottom: 8px;
+
+        h4{
+            border-bottom: 1px solid @itemBorderBright;
+            font-size: 0.9em;
+        }
+
+        .section{
+            display: inline-block;
+            border: 1px solid @itemBorder;
+            margin-right: 10px;
+            width: 150px;
+            height: 110px;
+            padding: 4px;
+            font-size: 0.9em;
+            position: relative;
+
+            i{
+                position: absolute;
+                left: 4px;
+                right: 4px;
+                bottom: 4px;
+                top: 30px;
+                border: 1px solid #3ab3d6;
+                background-color: #e1f4fa;
+
+            }
+
+            &.sidebar{
+                i{
+                    right: 50px;
+
+                    &:after{
+                        content: " ";
+                        position: absolute;
+                        border: 1px solid #3ab3d6;
+                        background-color: #e1f4fa;
+                        top: -1px;
+                        bottom: -1px;
+                        width: 43px;
+                        margin-left: 4px;
+                        left: 100%;
+                    }
+                }
+            }
+
+            &.sidebarright{
+                i{
+                    right: 100px;
+
+                    &:after{
+                        content: " ";
+                        position: absolute;
+                        border: 1px solid #3ab3d6;
+                        background-color: #e1f4fa;
+                        top: -1px;
+                        bottom: -1px;
+                        width: 93px;
+                        margin-left: 4px;
+                        left: 100%;
+                    }
+                }
+            }
+
+            &:hover{
+                border: 1px solid @primary;
+                cursor: pointer;
+            }
+        }
+
+    }
+
+    .fa-star.clickable,
+    .fa-star-o.clickable{
+        color: silver;
+
+        &:hover{
+            color: #fece02;
+            cursor: pointer;
+        }
+
+        &.active{
+            color: #fece02;
+        }
+
+    }
+
+
+
 }
 
 .languageeditor,
@@ -123,6 +283,7 @@
     font-size: 12px;
     color: #8d9b99;
     border-bottom: 1px solid #f2f2f5;
+    position: relative;
 
     &.inactive{
         color: #b7c5c3;
@@ -132,10 +293,26 @@
         }
     }
 
+    .action_removelanguage{
+        display: none;
+        position: absolute;
+        color: rgba(0,0,0,0.2);
+        right: 4px;
+
+    }
+
     &:hover{
         background-color: @backgroundLight;
         border-bottom: 1px solid @itemBorderBright;
         cursor: pointer;
+
+        .action_removelanguage{
+            display: block;
+
+            &:hover{
+                color: @negative;
+            }
+        }
     }
 
     &::before{
@@ -144,7 +321,7 @@
         width: 20px;
         height: 20px;
         margin-left: -20px;
-        background-image: url("@{imgpath}flags.png");
+        background-image: url("@{imgpath}flags.png?v2");
         background-repeat: no-repeat;
         margin-right: 4px;
     }
@@ -161,11 +338,13 @@
 .language_se::before{content: "SE";}
 .language_no::before{content: "NO";}
 .language_gr::before{content: "GR";}
+.language_pt::before{content: "PT";}
 
 .flag_en::before{background-position: 0 -41px; }
 .flag_nl::before{background-position: 0 -20px; }
 .flag_befr::before{background-position: 0 -209px; }
 .flag_benl::before{background-position: 0 -188px; }
+.flag_lufr::before{background-position: 0 -20px; }
 .flag_fr::before{background-position: 0 -62px; }
 .flag_it::before{background-position: 0 -83px; }
 .flag_es::before{background-position: 0 -146px; }
@@ -173,6 +352,7 @@
 .flag_se::before{background-position: 0 -104px; }
 .flag_no::before{background-position: 0 -167px; }
 .flag_gr::before{background-position: 0 -255px; }
+.flag_pt::before{background-position: 0 -276px; }
 .flag_all::before{background-position: 23px -229px; }
 
 .settingstable{
@@ -199,6 +379,7 @@
 }
 
 
+
 #codecontent{
     margin: 0;
     position: absolute;
@@ -206,4 +387,47 @@
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+.relatedposts{
+    background-color: #f2f2f5;
+    padding: 4px;
+    font-size: 12px;
+
+    h3{
+        margin: 8px 0 0 0;
+        font-size: 14px;
+        border-bottom: 1px solid @itemBorder;
+        padding: 2px 0;
+        font-weight: normal;
+
+        &.first{
+            margin: 0;
+        }
+    }
+
+    .button.inline{
+        display: inline-block;
+        width: 70px;
+        float: right;
+        position: relative;
+        background-color: transparent;
+        border: none;
+        z-index: 2;
+    }
+
+    .inputbutton{
+        position: relative;
+    }
+
+    .inputBox.prebutton{
+        position: absolute;
+        left: 0;
+        right: 70px;
+        z-index: 1;
+    }
+
+    .label{
+        text-align: right;
+    }
 }

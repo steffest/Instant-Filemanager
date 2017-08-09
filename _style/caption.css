@@ -1,0 +1,92 @@
+.caption {
+  background-color: #2a74a0;
+  padding: 5px 4px;
+  font-size: 13px;
+  color: #FFF;
+  height: 26px;
+}
+.caption.borderright {
+  border-right: 1px solid #c8d7d6;
+}
+.caption .captionsubmenu {
+  display: none;
+  position: absolute;
+  background-color: white;
+  top: 26px;
+  right: 0;
+  width: 200px;
+  border: 1px solid silver;
+  border-top: none;
+  border-bottom: none;
+}
+.caption .captionsubmenu .button {
+  color: #2a74a0;
+  border-bottom: 1px solid silver;
+  width: 100%;
+  margin: 0;
+  height: auto;
+  padding: 6px;
+}
+.caption .captionsubmenu .button:hover {
+  background-color: #d2e6ff;
+  color: #15394f;
+}
+.caption.right {
+  text-align: right;
+  border-right: none;
+  border-left: none;
+}
+.caption.left {
+  border-left: none;
+}
+.caption .label {
+  display: inline-block;
+}
+.caption .buttons {
+  display: inline-block;
+  float: right;
+}
+.caption .buttons.divider {
+  margin-left: 5px;
+  padding-left: 5px;
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+}
+.caption .button {
+  background: none;
+  border-radius: 0;
+  background-color: transparent;
+  border-color: transparent;
+  height: 20px;
+  margin: -8px 0 0 0;
+  padding: 2px 4px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+.caption .button.selected,
+.caption .button:hover {
+  color: white;
+}
+.caption .button.display_list::before {
+  content: "\f03a";
+}
+.caption .button.display_grid::before {
+  content: "\f00a";
+}
+.caption .button.display_gridlarge::before {
+  content: "\f009";
+}
+.caption .button.display_tags::before {
+  content: "\f02c";
+}
+.caption .button.expand::before {
+  content: "\f065";
+}
+.caption .button.close::before {
+  content: "\f00d";
+}
+.caption .button.next::before {
+  content: "\f054";
+}
+.caption .button.prev::before {
+  content: "\f053";
+}

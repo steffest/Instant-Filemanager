@@ -25,14 +25,20 @@
                             <div class="captionsubmenu settingsmenu">
                                 <div class="button action_logout">Log out</div>
                             </div>
+                            <div class="captionsubmenu cmslanguagemenu">
+                                <div class="button action_changelanguage">ES</div>
+                            </div>
                             <div class="label">Content</div>
-                            <div class="buttons divider">
+                            <div class="buttons divider nofrontend">
                                 <div class="button settings"><span class="username">user</span> <i class="fa fa-gear"></i> </div>
                             </div>
-                            <div class="buttons divider">
+                            <div class="buttons divider nofrontend">
+                                <div class="button cmslanguage">EN</div>
+                            </div>
+                            <div class="buttons divider nofrontend">
                                 <div class="button toggle display_tags fa"></div>
                             </div>
-                            <div class="buttons">
+                            <div class="buttons nofrontend">
                                 <div class="button display display_list fa selected"></div>
                                 <div class="button display display_grid fa"></div>
                                 <div class="button display display_gridlarge fa"></div>
@@ -139,9 +145,13 @@
                                     <option value="parked">Parked</option>
                                 </select>
                                 <div id="commonpublishdate">
-                                    <div class="datelabel">From</div> <input type="text" id="commonpublishfrom" class="datepicker">
+                                    <div class="datelabel">From</div>
+                                    <input type="text" id="commonpublishfrom" class="datepicker">
+                                    <input type="text" id="commonpublishfromtime" class="timepicker">
                                     <div class="clear"></div>
-                                    <div class="datelabel">To</div> <input type="text" id="commonpublishto" class="datepicker">
+                                    <div class="datelabel">To</div>
+                                    <input type="text" id="commonpublishto" class="datepicker">
+                                    <input type="text" id="commonpublishtotime" class="timepicker">
                                     <div class="clear"></div>
                                 </div>
                             </div>
@@ -254,6 +264,29 @@
     </div>
 </script>
 
+<script id="inlineConfirmTemplate" type="text/html">
+    <div class="inlineDialog">
+        <div class="content">
+            {{content}}
+        </div>
+        <div class="buttons">
+            <div class="button positive">Yes</div>
+            <div class="button neutral">No</div>
+        </div>
+    </div>
+</script>
+
+<script id="inlineNotificationTemplate" type="text/html">
+    <div class="inlineDialog">
+        <div class="content">
+            {{content}}
+        </div>
+        <div class="buttons">
+            <div class="button positive">OK</div>
+        </div>
+    </div>
+</script>
+
 <script id="inputBox" type="text/html">
     <input type="text" class="inputBox" value="{{value}}">
 </script>
@@ -345,7 +378,7 @@
 </script>
 
 <script id="dialogTemplate" type="text/html">
-    <div class="dialog">
+    <div class="dialog cms">
         <div class="caption">
             <div class="label">{{title}}</div>
             <div class="buttons divider">
@@ -368,7 +401,60 @@
             </div>
         </footer>
 
+    </div>
+</script>
+
+<script id="home" type="text/html">
+    <div class="home">
+        <h3>Welcome to</h3>
+        <h1>{{cmsname}}</h1>
+        <h3>version {{cmsversion}}</h3>
+        <div class="info">Make your selection on the left.<br>
+        Or go to <a href="/">your website</a>.
+        </div>
+    </div>
+</script>
+
+<script id="addsectionTemplate" type="text/html">
+    <div class="addsectionpanel">
+        <div class="sectiontypes">
+            <h4>Add section</h4>
+            <div class="section full action_addsection" data-type="full"><i></i>Full width</div>
+            <div class="section sidebar action_addsection" data-type="sidebar"><i></i>Sidebar</div>
+            <div class="section sidebarright action_addsection hidden" data-type="sidebarright"><i></i>Sidebar right</div>
+        </div>
+        <div class="action action_closeaddsection"><i class="fa fa-chevron-left"></i> Cancel</div>
+    </div>
+</script>
+
+<script id="frontendmenu" type="text/html">
+    <div class="frontendmenu">
+        <div class="on">
+            <div class="button editpage"><i class="fa fa-pencil"></i> Edit Page</div>
+            <div class="button toggleinpageditor"><i class="fa fa-check-circle"></i> Inpage editor active</div>
+            <div class="button toggleshowdraft"><i class="fa fa-check-circle"></i> Toggle draft articles</div>
+            <a class="button gocms" href="/admin"><i class="fa fa-cogs"></i> CMS</a>
+            <div class="button close"><i class="fa fa-close"></i></div>
+        </div>
+        <div class="off">
+            <div class="button show"><i class="fa fa-chevron-circle-right"></i></div>
+        </div>
 
     </div>
+</script>
+
+<script id="iframecontainer" type="text/html">
+       <div class="mainpanelmodule secundarymainpanelmodule iframecontainer">
+
+           <div class="caption left">
+               <div class="label">Help</div>
+               <div class="buttons divider">
+                   <div class="button iframecontainer_close fa close"></div>
+               </div>
+           </div>
+           <div class="belowcaption max">
+               <iframe src="{{{src}}}"></iframe>
+           </div>
+       </div>
 </script>
 

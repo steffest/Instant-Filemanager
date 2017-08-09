@@ -1,48 +1,37 @@
 @media all and (max-width: 800px) {
-    .filemanager .foldercontainer{
-        font-size: 14px;
-    }
-
-
-    .filelist .listitem{
-        font-size: 14px;
-        padding: 8px 12px;
-    }
-
-    .filemanager .caption,
-    .texteditor .caption{
-        height: 32px;
-        padding: 7px;
-    }
-
-    .filemanager .caption .button{
-        font-size: 16px;
-        padding: 7px 5px;
-    }
-
-    .filemanager .caption .button.action_togglefiledetail{
-        padding-right: 0;
-    }
-
-    .filemanager .caption .captionsubmenu{
-        top: 32px;
-    }
-
-    .belowcaption{
-        padding-top: 32px;
-    }
-
-    .filemanager .directorycontainer .caption{
-        margin-top: -32px;
-    }
-
-    .filemanager .directorycontainer{
-        padding-top: 32px;
-    }
-
-    .filemanager .directory .label.fa{
-        padding: 6px 4px;
-        border-bottom: 1px solid #e9e9e9;
-    }
-
+  .filemanager .foldercontainer {
+    font-size: 14px;
+  }
+  .filelist .listitem {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  .filemanager .caption,
+  .texteditor .caption {
+    height: 32px;
+    padding: 7px;
+  }
+  .filemanager .caption .button {
+    font-size: 16px;
+    padding: 7px 5px;
+  }
+  .filemanager .caption .button.action_togglefiledetail {
+    padding-right: 0;
+  }
+  .filemanager .caption .captionsubmenu {
+    top: 32px;
+  }
+  .belowcaption {
+    padding-top: 32px;
+  }
+  .filemanager .directorycontainer .caption {
+    margin-top: -32px;
+  }
+  .filemanager .directorycontainer {
+    padding-top: 32px;
+  }
+  .filemanager .directory .label.fa {
+    padding: 6px 4px;
+    border-bottom: 1px solid #e9e9e9;
+  }
 }

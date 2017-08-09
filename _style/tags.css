@@ -1,0 +1,100 @@
+.taglist {
+  padding: 4px 0 4px 10px;
+}
+.taglist .tag {
+  font-size: 13px;
+  color: grey;
+  padding: 1px;
+  margin-left: 10px;
+}
+.taglistactions.editor .taglist .tag.selected {
+  background-color: #d2ffd2;
+  color: black;
+}
+.taglist .tag:hover {
+  color: #575757;
+  text-decoration: underline;
+  cursor: move;
+}
+.taglistactions.editor .taglist .tag:hover {
+  cursor: default;
+}
+.taglist .tagtree {
+  padding-left: 10px;
+  display: none;
+}
+.taglist .handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  color: grey;
+}
+.taglist .handle.open {
+  width: 12px;
+  margin-left: -2px;
+}
+.taglist .handle.haschildren:hover {
+  color: black;
+  cursor: pointer;
+}
+.taglist .handle.haschildren::before {
+  content: "\f0da";
+}
+.taglist .handle.open.haschildren::before {
+  content: "\f0d7";
+}
+.taglistactions .actionbar {
+  background-color: #f2f2f5;
+  padding: 2px;
+  height: 24px;
+}
+.taglistactions .buttons {
+  display: inline-block;
+  height: 100%;
+  float: none;
+}
+.taglistactions .button {
+  display: inline-block;
+  background: none;
+  border: none;
+  border-radius: 0;
+  width: 20px;
+  height: 16px;
+  font-size: 12px;
+  color: grey;
+}
+.taglistactions .button:hover {
+  color: black;
+}
+.taglistactions .searchbox {
+  float: right;
+  height: 20px;
+  width: 120px;
+  background-color: white;
+  border: none;
+}
+.taglistactions .searchbox i {
+  position: absolute;
+  font-size: 12px;
+  color: grey;
+  margin-top: 3px;
+  margin-left: 3px;
+}
+.taglistactions .searchbox .tagsearch {
+  width: 98px;
+  height: 15px;
+  line-height: normal;
+  border: none;
+  background-color: transparent;
+  margin-left: 20px;
+}
+.taglistactions .searchbox .tagsearch:focus {
+  border: none;
+  outline: none;
+}
+.taglistactions .tags_toggle::before {
+  content: "\f102";
+}
+.taglistactions .tags_toggle.down::before {
+  content: "\f103";
+}

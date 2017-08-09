@@ -1,0 +1,397 @@
+.editor {
+  padding-bottom: 4px;
+}
+.editor .itemcaption {
+  padding: 4px;
+  background-color: #f2f2f5;
+  text-transform: capitalize;
+  font-size: 0.9em;
+}
+.editor .itemcaption small {
+  font-size: 0.8em;
+  opacity: 0.6;
+}
+.editor .itemcaption i.fa {
+  color: rgba(0, 0, 0, 0.3);
+  font-size: 0.8em;
+  margin-right: 2px;
+  width: 10px;
+}
+.editor .itemcaption:hover {
+  cursor: pointer;
+}
+.editor .itemcaption:hover i.fa {
+  color: black;
+}
+.editor .inputBox {
+  padding: 4px;
+  border: 1px solid silver;
+  width: 100%;
+}
+.editor textarea {
+  padding: 4px;
+  border: 1px solid silver;
+  width: 100%;
+  height: 200px;
+}
+.editor select {
+  padding: 4px;
+  border: 1px solid silver;
+  width: 100%;
+  background-color: white;
+}
+.editor .checkboxes label {
+  display: inline-block;
+  margin: 3px 0 0 5px;
+}
+.editor .fileupload .attachmentfile {
+  padding: 6px 10px;
+  font-size: 12px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 4px;
+  position: relative;
+}
+.editor .fileupload .attachmentfile .delete {
+  display: none;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  right: 10px;
+  font-size: 14px;
+}
+.editor .fileupload .attachmentfile .delete:hover {
+  color: red;
+  cursor: pointer;
+}
+.editor .fileupload .attachmentfile a {
+  text-decoration: none;
+  color: grey;
+}
+.editor .fileupload .attachmentfile a:hover {
+  color: #3FB3E7;
+  text-decoration: underline;
+}
+.editor .fileupload .attachmentfile:hover .delete {
+  display: block;
+}
+.editor .sectionscontainer .sectiontitle {
+  margin-top: 10px;
+  padding: 4px;
+  font-size: 0.8em;
+  font-weight: bold;
+  clear: both;
+}
+.editor .sectionscontainer .sectiontitle i {
+  display: none;
+  color: grey;
+  position: absolute;
+  right: 10px;
+}
+.editor .sectionscontainer .sectiontitle i:hover {
+  color: #d61747;
+  cursor: pointer;
+}
+.editor .sectionscontainer .sectiontitle:hover i {
+  display: block;
+}
+.editor .sectionscontainer .sectionpanel .body {
+  float: left;
+  width: 60%;
+}
+.editor .sectionscontainer .sectionpanel .sidebar {
+  float: left;
+  width: 40%;
+}
+.editor .sectionscontainer .sectionpanel:after {
+  content: " ";
+  clear: both;
+}
+.editor .sectionscontainer .sectionpanel.sidebarright .body {
+  float: left;
+  width: 40%;
+}
+.editor .sectionscontainer .sectionpanel.sidebarright .sidebar {
+  float: left;
+  width: 60%;
+}
+.editor .action_toggleaddsection {
+  margin-top: 10px;
+  clear: both;
+}
+.editor .sectiontypes {
+  clear: both;
+  margin-bottom: 8px;
+}
+.editor .sectiontypes h4 {
+  border-bottom: 1px solid #a2c4f9;
+  font-size: 0.9em;
+}
+.editor .sectiontypes .section {
+  display: inline-block;
+  border: 1px solid #c8d7d6;
+  margin-right: 10px;
+  width: 150px;
+  height: 110px;
+  padding: 4px;
+  font-size: 0.9em;
+  position: relative;
+}
+.editor .sectiontypes .section i {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  top: 30px;
+  border: 1px solid #3ab3d6;
+  background-color: #e1f4fa;
+}
+.editor .sectiontypes .section.sidebar i {
+  right: 50px;
+}
+.editor .sectiontypes .section.sidebar i:after {
+  content: " ";
+  position: absolute;
+  border: 1px solid #3ab3d6;
+  background-color: #e1f4fa;
+  top: -1px;
+  bottom: -1px;
+  width: 43px;
+  margin-left: 4px;
+  left: 100%;
+}
+.editor .sectiontypes .section.sidebarright i {
+  right: 100px;
+}
+.editor .sectiontypes .section.sidebarright i:after {
+  content: " ";
+  position: absolute;
+  border: 1px solid #3ab3d6;
+  background-color: #e1f4fa;
+  top: -1px;
+  bottom: -1px;
+  width: 93px;
+  margin-left: 4px;
+  left: 100%;
+}
+.editor .sectiontypes .section:hover {
+  border: 1px solid #2a74a0;
+  cursor: pointer;
+}
+.editor .fa-star.clickable,
+.editor .fa-star-o.clickable {
+  color: silver;
+}
+.editor .fa-star.clickable:hover,
+.editor .fa-star-o.clickable:hover {
+  color: #fece02;
+  cursor: pointer;
+}
+.editor .fa-star.clickable.active,
+.editor .fa-star-o.clickable.active {
+  color: #fece02;
+}
+.languageeditor,
+.languageeditor_all {
+  padding: 4px 0 4px 58px;
+  position: relative;
+}
+.languageeditor::before,
+.languageeditor_all::before {
+  content: '';
+  position: absolute;
+  width: 50px;
+  height: 20px;
+  top: 6px;
+  left: 0;
+  color: #a2a2a2;
+  font-size: 11px;
+  background-image: url("../_img/flags.png?v2");
+  background-repeat: no-repeat;
+  padding-left: 22px;
+}
+.languagecaption.languageeditor {
+  padding: 4px 0 4px 24px;
+  margin: 10px 0;
+  border-bottom: 1px solid #c8d7d6;
+}
+.languageselect {
+  margin: 0 0 0 20px;
+  padding: 4px 0 4px 20px;
+  font-size: 12px;
+  color: #8d9b99;
+  border-bottom: 1px solid #f2f2f5;
+  position: relative;
+}
+.languageselect.inactive {
+  color: #b7c5c3;
+}
+.languageselect.inactive::before {
+  opacity: 0.3;
+}
+.languageselect .action_removelanguage {
+  display: none;
+  position: absolute;
+  color: rgba(0, 0, 0, 0.2);
+  right: 4px;
+}
+.languageselect:hover {
+  background-color: #f2f2f5;
+  border-bottom: 1px solid #a2c4f9;
+  cursor: pointer;
+}
+.languageselect:hover .action_removelanguage {
+  display: block;
+}
+.languageselect:hover .action_removelanguage:hover {
+  color: #d61747;
+}
+.languageselect::before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin-left: -20px;
+  background-image: url("../_img/flags.png?v2");
+  background-repeat: no-repeat;
+  margin-right: 4px;
+}
+.language_en::before {
+  content: "EN";
+}
+.language_nl::before {
+  content: "NL";
+}
+.language_benl::before {
+  content: "BENL";
+}
+.language_befr::before {
+  content: "BEFR";
+}
+.language_fr::before {
+  content: "FR";
+}
+.language_de::before {
+  content: "DE";
+}
+.language_it::before {
+  content: "IT";
+}
+.language_es::before {
+  content: "ES";
+}
+.language_se::before {
+  content: "SE";
+}
+.language_no::before {
+  content: "NO";
+}
+.language_gr::before {
+  content: "GR";
+}
+.language_pt::before {
+  content: "PT";
+}
+.flag_en::before {
+  background-position: 0 -41px;
+}
+.flag_nl::before {
+  background-position: 0 -20px;
+}
+.flag_befr::before {
+  background-position: 0 -209px;
+}
+.flag_benl::before {
+  background-position: 0 -188px;
+}
+.flag_lufr::before {
+  background-position: 0 -20px;
+}
+.flag_fr::before {
+  background-position: 0 -62px;
+}
+.flag_it::before {
+  background-position: 0 -83px;
+}
+.flag_es::before {
+  background-position: 0 -146px;
+}
+.flag_de::before {
+  background-position: 0 -125px;
+}
+.flag_se::before {
+  background-position: 0 -104px;
+}
+.flag_no::before {
+  background-position: 0 -167px;
+}
+.flag_gr::before {
+  background-position: 0 -255px;
+}
+.flag_pt::before {
+  background-position: 0 -276px;
+}
+.flag_all::before {
+  background-position: 23px -229px;
+}
+.settingstable th {
+  background-color: #3FB3E7;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  font-weight: normal;
+}
+.settingstable input {
+  width: 100%;
+  border: 1px solid silver;
+  text-align: center;
+}
+.settingstable td.info {
+  background-color: #f2f2f5;
+  color: gray;
+  font-size: 11px;
+  text-align: center;
+}
+#codecontent {
+  margin: 0;
+  position: absolute;
+  top: 28px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.relatedposts {
+  background-color: #f2f2f5;
+  padding: 4px;
+  font-size: 12px;
+}
+.relatedposts h3 {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+  border-bottom: 1px solid #c8d7d6;
+  padding: 2px 0;
+  font-weight: normal;
+}
+.relatedposts h3.first {
+  margin: 0;
+}
+.relatedposts .button.inline {
+  display: inline-block;
+  width: 70px;
+  float: right;
+  position: relative;
+  background-color: transparent;
+  border: none;
+  z-index: 2;
+}
+.relatedposts .inputbutton {
+  position: relative;
+}
+.relatedposts .inputBox.prebutton {
+  position: absolute;
+  left: 0;
+  right: 70px;
+  z-index: 1;
+}
+.relatedposts .label {
+  text-align: right;
+}

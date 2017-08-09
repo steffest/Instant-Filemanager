@@ -18,6 +18,11 @@
 }
 
 
+&.frontend .nofrontend{
+    display: none !important;
+}
+
+
     .filemanager .panes{
         height: 100%;
         width: 100%;
@@ -103,7 +108,7 @@
         margin-left: -200px;
     }
 
-    .frontend .filemanager .directorycontainer{
+    &.frontend .filemanager .directorycontainer{
         display: none;
     }
 
@@ -130,13 +135,17 @@
         right: -24px;
     }
 
-
     .filemanager .foldercontainer{
         padding: 4px 0;
         height: 100%;
         font-size: 13px;
         overflow-x: hidden;
         overflow-y: scroll;
+    }
+
+    &.frontend .filemanager .foldercontainer{
+        display: none;
+
     }
 
     .filemanager .directorylist,
@@ -180,7 +189,7 @@
     }
 
     .filemanager.nosidebar .filecontainer,
-    .frontend .filemanager .filecontainer{
+    &.frontend .filemanager .filecontainer{
         padding-left: 200px;
     }
 
@@ -189,7 +198,7 @@
     }
 
     .filemanager.nosidebar.nofiledetail .filecontainer,
-    .frontend .filemanager.nofiledetail .filecontainer{
+    &.frontend .filemanager.nofiledetail .filecontainer{
         padding-left: 45px;
     }
 
@@ -208,7 +217,7 @@
         left: 200px;
     }
 
-    .frontend .filemanager .filecontainer .caption{
+    &.frontend .filemanager .filecontainer .caption{
         left: 250px;
         right: 50px;
     }
@@ -217,7 +226,7 @@
         left: 40px;
     }
 
-    .frontend .filemanager.nofiledetail .filecontainer .caption {
+    &.frontend .filemanager.nofiledetail .filecontainer .caption {
         left: 90px;
     }
 
@@ -234,9 +243,10 @@
         width: 200px;
         margin-left: 200px;
         position: fixed;
+        background-color: white;
     }
 
-    .frontend .filemanager .filedetail{
+    &.frontend .filemanager .filedetail{
         height: auto;
         bottom: 50px;
         top: 0;
@@ -246,7 +256,7 @@
         margin-left: 0;
     }
 
-    .frontend .filemanager .filedetail{
+    &.frontend .filemanager .filedetail{
         margin-left: 0;
     }
 
