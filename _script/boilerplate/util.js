@@ -64,6 +64,8 @@ function createUpload(config){
 
     var result = createDiv("fileupload");
 
+    var initButtonParent = config.initButtonContainer || result;
+
     var input;
     var listView;
     var addFile;
@@ -155,7 +157,7 @@ function createUpload(config){
 
     buttonContainer.appendChild(button);
 
-    result.appendChild(init);
+    initButtonParent.appendChild(init);
     result.appendChild(bar);
     result.appendChild(buttonContainer);
 

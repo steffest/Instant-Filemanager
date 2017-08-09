@@ -56,7 +56,7 @@ var Config = (function(){
 
     var settings_localhost = {
         title: "Laozi CMS",
-        apiUrl: "/laozi/",
+        apiUrl: "http://box.stef.be/laozi/",
         isMultiLanguage: true
         //apiUrl: "/www/Instant-API-PHP/"
 

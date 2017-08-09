@@ -190,6 +190,12 @@
 .editor .fa-star-o.clickable.active {
   color: #fece02;
 }
+.editor .inlinebuttons {
+  padding: 4px;
+}
+.editor .inlinebuttons div {
+  display: inline;
+}
 .languageeditor,
 .languageeditor_all {
   padding: 4px 0 4px 58px;
@@ -394,4 +400,7 @@
 }
 .relatedposts .label {
   text-align: right;
+}
+a.textlink {
+  text-decoration: none;
 }

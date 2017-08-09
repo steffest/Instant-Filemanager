@@ -1091,6 +1091,12 @@ body.cms {
 .cms .editor .fa-star-o.clickable.active {
   color: #fece02;
 }
+.cms .editor .inlinebuttons {
+  padding: 4px;
+}
+.cms .editor .inlinebuttons div {
+  display: inline;
+}
 .cms .languageeditor,
 .cms .languageeditor_all {
   padding: 4px 0 4px 58px;
@@ -1295,6 +1301,9 @@ body.cms {
 }
 .cms .relatedposts .label {
   text-align: right;
+}
+.cms a.textlink {
+  text-decoration: none;
 }
 .cms .filemanager.cover .panes {
   -moz-filter: blur(3px);

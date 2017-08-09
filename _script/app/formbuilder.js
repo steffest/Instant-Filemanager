@@ -405,6 +405,8 @@ var FormBuilder = (function () {
                         var img;
                         $(parent).find(".imagepreview").remove();
                         var imgcontainer = createDiv("imagepreview");
+                        var buttoncontainer = $(parent).find(".imagepreviewbuttons");
+
 
                         var imgUrl = ext.iconBaseUrl;
                         if (forceRefresh) imgUrl += "refresh/";
@@ -425,9 +427,14 @@ var FormBuilder = (function () {
                             if (url.indexOf("/")<0 && ext.uploadPath) url =  ext.uploadPath + "/" + url;
 
                             var editUrl =  "plugin/imageeditor/?f=" +  url;
-                            actions.innerHTML = '<a href="'+editUrl+'" target="_blank" class="action"><i class="fa fa-edit"></i> Edit</a>';
-                            actions.innerHTML += ' <a href="javascript:onImageEditorUpdate()" class="action"><i class="fa fa-refresh"></i> Refresh</a>';
-                            imgcontainer.appendChild(actions);
+                            actions.innerHTML = '<a href="'+editUrl+'" target="_blank" class="textlink action"><i class="fa fa-edit"></i> Edit</a>';
+                            actions.innerHTML += ' <a href="javascript:onImageEditorUpdate()" class="textlink action"><i class="fa fa-refresh"></i> Refresh</a>';
+
+                            if (buttoncontainer.length){
+                                buttoncontainer.html(actions.innerHTML);
+                            }else{
+                                imgcontainer.appendChild(actions);
+                            }
 
                             window.onImageEditorUpdate = function(){
                                 showImage(value,true);
@@ -453,8 +460,10 @@ var FormBuilder = (function () {
                     showImage(this.value);
                     updateImageInfo(this.value);
                 };
-                showImage(value);
                 parent.appendChild(input);
+
+
+                var buttons = createDiv("buttons inlinebuttons");
 
                 var select = createDiv("textlink action");
                 select.innerHTML = '<i class="fa fa-folder-open-o"></i> Browse';
@@ -467,7 +476,8 @@ var FormBuilder = (function () {
                         }
                     });
                 };
-                parent.appendChild(select);
+                buttons.appendChild(select);
+                parent.appendChild(buttons);
 
                 if (ext.uploadPath){
 
@@ -479,6 +489,7 @@ var FormBuilder = (function () {
 
                     var config = {
                         path: uploadUrl,
+                        initButtonContainer: buttons,
                         onDone: function(fileData){
                             if (fileData.filename){
                                 var url =  fileData.filename;
@@ -496,6 +507,10 @@ var FormBuilder = (function () {
 
                 }
 
+                var imagepreviewbuttons = createDiv("imagepreviewbuttons");
+                buttons.appendChild(imagepreviewbuttons);
+
+                showImage(value);
 
 
 
