@@ -14,6 +14,7 @@ body {
 }
 body.cms {
   font-family: sans-serif;
+  min-height: 100vh;
 }
 .hidden {
   display: none;
@@ -203,7 +204,7 @@ body.cms {
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 75% 75%;
-  opacity: .5;
+  opacity: 0.5;
   *position: absolute;
   *top: 0;
 }
@@ -226,7 +227,7 @@ body.cms {
 .pika-prev.is-disabled,
 .pika-next.is-disabled {
   cursor: default;
-  opacity: .2;
+  opacity: 0.2;
 }
 .pika-select {
   display: inline-block;
@@ -240,7 +241,7 @@ body.cms {
 }
 .pika-table th,
 .pika-table td {
-  width: 14.285714285714286%;
+  width: 14.28571429%;
   padding: 0;
 }
 .pika-table th {
@@ -300,7 +301,7 @@ body.cms {
   pointer-events: none;
   cursor: default;
   color: #999;
-  opacity: .3;
+  opacity: 0.3;
 }
 .pika-button:hover {
   color: #fff;
@@ -433,6 +434,13 @@ body.cms {
   background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
+}
+.cms .listitem .fileicon div.fileiconimg {
+  text-align: center;
+}
+.cms .listitem .fileicon div.fileiconimg img {
+  max-width: 100%;
+  max-height: 100%;
 }
 .cms .listitem .fileicon div.fa {
   width: 100%;
@@ -780,6 +788,9 @@ body.cms {
   bottom: 0;
   z-index: 2000;
 }
+.cms .blanket.active {
+  display: block;
+}
 .cms .popup {
   position: fixed;
   left: 25%;
@@ -822,7 +833,7 @@ body.cms {
 }
 .cms .propertypanel .item {
   padding: 2px;
-  border-top: 1px solid  #f3f3f8;
+  border-top: 1px solid #f3f3f8;
 }
 .cms .propertypanel .property select,
 .cms .propertypanel .property input {

@@ -156,7 +156,7 @@ var FileSystem = (function () {
         if (ext == ".html" || ext == ".htm"){
             result = FILETYPE.HTML;
         }
-        if (ext == ".js" || ext == ".asp" || ext == ".php" || ext == ".vb" || ext == ".cs" || ext == ".css" || ext == ".aspx" || ext == ".jsp" || ext == ".json" || ext == ".translation"){
+        if (ext == ".js" || ext == ".geojson" ||  ext == ".asp" || ext == ".php" || ext == ".vb" || ext == ".cs" || ext == ".css" || ext == ".aspx" || ext == ".jsp" || ext == ".json" || ext == ".translation"){
             result = FILETYPE.CODE;
         }
         if (ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".png" || ext == ".bmp"){

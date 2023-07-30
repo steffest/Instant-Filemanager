@@ -899,6 +899,7 @@ var UI = (function () {
         currentProfileElm = sender;
 
         var genericSectionUrl;
+        var extraItems;
 
         switch(section){
             case "menu":
@@ -906,6 +907,9 @@ var UI = (function () {
                 break;
             case "form":
                 genericSectionUrl = "data/form/?fields=id,name";
+                extraItems = [
+                    {id:0, name: "Collections"}
+                ];
                 break;
             case "filemanager":
                 if (submenu.hasClass("sectionsubmenu")) {
@@ -958,7 +962,6 @@ var UI = (function () {
                         })
                     }
 
-
                 }
                 break;
             case "help":
@@ -995,12 +998,21 @@ var UI = (function () {
                 submenu.insertAfter(sender);
             }
             if (submenu){
-                self.listSectionContent(genericSectionUrl,section,submenu);
+                self.listSectionContent(genericSectionUrl,section,submenu,function(){
+                    console.log(extraItems);
+
+                    if (extraItems && extraItems.length){
+						var elm = createDiv(section + " faw");
+						elm.innerHTML = extraItems[0].name;
+						$(elm).data("id",extraItems[0].id);
+						submenu.append(elm);
+                    }
+                });
             }
         }
     };
 
-    self.listSectionContent = function(url,profile,container){
+    self.listSectionContent = function(url,profile,container,next){
         Api.get(url ,function(data,result){
             if (data && result=="ok"){
                 var listContainer = navigationFilesElm;
@@ -1027,6 +1039,8 @@ var UI = (function () {
                     listContainer.append(listElm);
 
                 }
+
+                if (next) next();
             }
         })
     };
@@ -1607,6 +1621,7 @@ var UI = (function () {
             }
         }
         container.appendChild(table);
+        blanket.classList.add("active");
 
         blanket.onclick = function(){
             self.closePopup();

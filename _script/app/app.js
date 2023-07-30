@@ -11,10 +11,21 @@ var App = (function () {
     };
 
     self.login = function(next){
+
+
+        if (Config.isLocalHost()){
+			currentUser = {
+				userRole: "system admin"
+            };
+            next(true);
+            return;
+        }
+
+
         Api.get("user",function(result){
             if (result && result.userId && result.userRole && canRoleLogin[result.userRole]){
                 currentUser = result;
-                console.error(currentUser);
+
                 if (typeof currentUser.languages == "string"){
                     Config.languages  = currentUser.languages.split(",");
 

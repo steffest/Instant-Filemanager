@@ -152,8 +152,9 @@ var DataStore = (function () {
 
             getIcon = function(item){
                 var icon = createDiv("fileicon");
-                var div = createDiv();
+                var div = createDiv("fileiconimg");
                 if (item.cover){
+                    //div.innerHTML = '<img src="/laozi/image/200x200/'+profile+'/'+ item.cover + '">';
                     Media.AddImageQueue("/laozi/image/200x200/"+profile+"/"+item.cover,div);
                 }else{
                     div.className = "fa file";

@@ -7,6 +7,8 @@ var Media = (function () {
 
     var imageQueue = [];
     var loadedQueue = {};
+    var imageQueueLoadDelay;
+    var imageQueueMaxRetry;
 
     self.isImage = function(path){
         var fileType = FileSystem.getFileType(path);
@@ -29,7 +31,7 @@ var Media = (function () {
     };
 
     self.getFileIcon = function(path,width){
-        var icon = createDiv();
+        var icon = createDiv("fileiconimg");
         var url = Media.getFileIconUrl(path,width);
         if (url){
 
@@ -225,14 +227,18 @@ var Media = (function () {
                 img.src = info.url;
                 img.retrycount = 0;
                 img.onload = function(){
-                    loadedQueue[info.url] = true;
-                    info.parent.style.backgroundImage = "url('" + info.url + "')";
+                    //loadedQueue[info.url] = true;
+                    //info.parent.style.backgroundImage = "url('" + info.url + "')";
+                    info.parent.innerHTML = '<img src="' + info.url + '">';
                 };
                 img.onerror = function(){
-                    console.error("error loading image " + info.url);
-                    if (img.retrycount < 1){
+                    if (img.retrycount < imageQueueMaxRetry){
                         img.retrycount++;
+                        console.log("retry " + img.retrycount +  " image " + info.url);
+                        info.parent.innerHTML = '<img src="' + info.url + '">';
                         imageQueue.push(info);
+                    }else{
+                        console.error("error loading image " + info.url);
                     }
                 };
 
@@ -241,7 +247,7 @@ var Media = (function () {
                         imageQueue.shift();
                         loadNextImageInQueue();
                     }
-                },40)
+                },imageQueueLoadDelay)
             }
         }
     };
@@ -255,6 +261,8 @@ var Media = (function () {
     };
 
     initImageQueue = function(){
+        imageQueueLoadDelay = Config.get("imageQueueLoadDelay",20);
+        imageQueueMaxRetry = Config.get("imageQueueMaxRetry",1);
         if (imageQueue.length==1) loadNextImageInQueue();
     };
 

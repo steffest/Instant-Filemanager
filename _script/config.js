@@ -12,16 +12,12 @@ var Config = (function(){
         useDatastoreTags: true,
         useFileTags: false,
         showHelp: false,
-        profiles:[
-            {title: "Pages", profile: "pages"},
-            {title: "Articles", profile: "articles"}
-        ],
+        profiles:[],
         sections:[
             {title: "Files", profile: "filemanager"}
         ],
         filemanagerFolders:[
-            {title: "Images", path: "/_img/"},
-            {title: "Includes", path: "/_include/"}
+            {title: "Images", path: "/_img/"}
         ],
         adminProfiles:[
             {title: "HealthToolkit", profile: "h_articles"},
@@ -51,7 +47,9 @@ var Config = (function(){
         ],
         tinyMCEConfig:{
 
-        }
+        },
+        imageQueueLoadDelay: 0, // depending on the backend, loading large amounts of (dynamicly scaled) image can clog up the server
+        imageQueueMaxRetry: 2
     };
 
     var settings_localhost = {
@@ -64,6 +62,10 @@ var Config = (function(){
 
     var settings_DHGOHG = {
         title: "DHGOHG CMS",
+        profiles:[
+            {title: "Pages", profile: "pages"},
+            {title: "Articles", profile: "articles"}
+        ],
         filemanagerFolders:[
             {title: "Pictures", path: "/_img/"},
             {title: "Documents", path: "/documents/"}
@@ -113,11 +115,19 @@ var Config = (function(){
     };
 
     var settings_Zespri = {
-        title: "Zespri CMS",
+        title: "Zespri DEV CMS",
         apiUrl: "/laozi/",
         css: "custom/_style/zespri.css",
         isMultiLanguage: true,
         showHelp: true,
+        profiles:[
+            {title: "Pages", profile: "pages"},
+            {title: "Articles", profile: "articles"}
+        ],
+        filemanagerFolders:[
+            {title: "Images", path: "/_img/"},
+            {title: "Includes", path: "/_include/"}
+        ],
         tinyMCEConfig:{
             document_base_url : "//www.zespri.eu/",
             style_formats:{title:"Zespri",items:[
@@ -156,12 +166,16 @@ var Config = (function(){
         useFileTags: true,
         useDatastoreTags: true,
         isMultiLanguage: false,
+        profiles:[
+            {title: "Blog", profile: "file_blog"}
+        ],
         adminFilemanagerFolders:[
             {title: "Camera", path: "/box/"},
             {title: "Foto Library", path: "/foto/"},
             {title: "DropBox", path: "/drop/"},
             {title: "Elpees", path: "/elpees/"},
 			{title: "Singles", path: "/singles/"},
+			{title: "KissCatalog", path: "/drop/Dropbox/Emulation/Amiga/collection/"},
             {title: "ROOT", path: "/"}
         ],
         adminProfiles:[
@@ -171,6 +185,27 @@ var Config = (function(){
             {title: "Pockets", profile: "pockets"}
         ]
     };
+	
+	var settings_IPIS = {
+        title: "IPIS MapBuilder",
+        apiUrl: "/laozi/",
+        useProfileTags: false,
+        useFileTags: false,
+        useDatastoreTags: false,
+        isMultiLanguage: false,
+		showHelp: true,
+        profiles:[],
+		contentManagerSections:[],
+		adminSections:[],
+		filemanagerFolders:[
+            {title: "ROOT", path: "/"},
+            {title: "Documentation", path: "/_docs/"}
+        ],
+        adminProfiles:[
+            
+        ]
+    };
+
 
     self.defaultLanguage = "en";
     self.languages = ["en","fr","it","es","de","nl","benl","befr","lufr","se","no","gr","pt"];
@@ -209,7 +244,11 @@ var Config = (function(){
 
     self.init = function(template){
         var newSettings;
-        if (isLocalHost()) newSettings=settings_localhost;
+        if (isLocalHost()) {
+            newSettings=settings_localhost;
+            newSettings=settings_Zespri;
+            newSettings.apiUrl = "https://www.zespri.eu/laozi/"
+		}
         if (isDevBox()) newSettings=settings_steffest;
 
         if (window.location.href.indexOf("dhgohg.be")>=0){
@@ -223,6 +262,10 @@ var Config = (function(){
 
         if (window.location.href.indexOf("zespri")>=0){
             newSettings=settings_Zespri;
+        }
+		
+		if (window.location.href.indexOf("annexmap")>=0){
+            newSettings=settings_IPIS;
         }
 
         if (newSettings){
@@ -261,11 +304,12 @@ var Config = (function(){
         return settings.apiUrl;
     };
 
-    self.get = function(key){
+    self.get = function(key,defaultValue){
         if (settings.hasOwnProperty(key)){
             return settings[key];
+        }else{
+            return defaultValue;
         }
-        return undefined;
     };
 
     self.persist = function(name,value){
